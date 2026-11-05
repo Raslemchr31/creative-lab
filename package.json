@@ -4,12 +4,22 @@
   "private": true,
   "description": "Creative Lab: spy on winning Meta ads, build a creative-DNA library, compile product x style batches, generate with Kie.ai, audit, assemble. Node 22, zero runtime deps except playwright-core (drives the system Chrome).",
   "type": "module",
-  "engines": { "node": ">=22.13" },
-  "bin": { "lab": "./cli.mjs" },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "bin": {
+    "lab": "./cli.mjs"
+  },
   "scripts": {
     "lab": "node --no-warnings cli.mjs",
     "test": "node --no-warnings tests/run.mjs",
-    "ui": "node --no-warnings server/server.mjs"
+    "ui": "node --no-warnings server/server.mjs",
+    "start": "node --no-warnings server/server.mjs",
+    "doctor": "node tools/doctor.mjs",
+    "setup:remotion": "npm install --prefix remotion --no-audit --no-fund",
+    "setup:skills": "node tools/install-skills.mjs",
+    "seed:import": "node --no-warnings tools/seed.mjs import --file",
+    "seed:export": "node --no-warnings tools/seed.mjs export"
   },
   "dependencies": {
     "playwright-core": "1.61.0"

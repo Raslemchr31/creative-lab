@@ -28,6 +28,8 @@ for the hobo pack"). Or run the commands yourself from `creative-lab/` — full 
 9. **Approve + export** — you approve; export lands in `ad-engine/config/clients/sirine-01/creative/lab-<batch>/`.
 
 ## Setup
+New machine? Follow `SETUP.md`.
+
 - Node 22, ffmpeg, ImageMagick, Google Chrome (already on this PC). `npm install` once in `creative-lab/`.
 - Kie.ai: copy `.env.example` to `.env` and put your key in `KIE_API_KEY` (only needed for live generation).
 - UI: `node --no-warnings server/server.mjs` → http://127.0.0.1:4317 (browse winners, styles, products, compile batches; it cannot spend).

@@ -1,0 +1,165 @@
+{
+  "id": "price-ladder-video",
+  "name": "Price-led video (price in frame 0)",
+  "summary": "Opens on the full pack with the price punched in big, then two quick proof beats with ticks, then an offer card restating price + COD before the end card.",
+  "why_it_wins": "The 'Juste un sac' price-led winner (offer_stack, price_shock, feasibility 4/5): the number is the hook for price-sensitive COD buyers. Competitors rarely show price on screen; we do it from frame 0.",
+  "refs": [
+    {
+      "kind": "adlib",
+      "id": "1800016363898953",
+      "take": [
+        "price-first hook",
+        "offer card"
+      ],
+      "note": null
+    }
+  ],
+  "format": "video",
+  "aspects": [
+    "9:16",
+    "4:5"
+  ],
+  "duration_s": 11,
+  "archetype": "offer_stack",
+  "hook_type": "price_shock",
+  "angle": "value_price",
+  "awareness": "product_aware",
+  "beats": [
+    {
+      "id": "b1",
+      "role": "hook",
+      "dur": 2.5,
+      "shot": "bundle_layout",
+      "strategy": "ai_plate_composite",
+      "ref_roles": [
+        "hero"
+      ],
+      "scene": "Seamless warm-grey studio sweep, soft top light",
+      "composition": "an empty area of the sweep floor in the lower-centre third where objects will be placed later",
+      "camera": "zoom_punch",
+      "overlays": [
+        {
+          "kind": "headline",
+          "slot": "hook_text",
+          "position": "top"
+        },
+        {
+          "kind": "price_tag",
+          "slot": "price",
+          "position": "upper_third",
+          "emphasis": "big"
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "role": "proof",
+      "dur": 2.5,
+      "shot": "product_angle",
+      "strategy": "real_photo_motion",
+      "ref_roles": [
+        "alt"
+      ],
+      "camera": "push_in",
+      "transition_in": "push",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_1",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b3",
+      "role": "proof",
+      "dur": 2.5,
+      "shot": "product_hero",
+      "strategy": "real_photo_motion",
+      "ref_roles": [
+        "hero"
+      ],
+      "camera": "pan",
+      "transition_in": "push",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_2",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b4",
+      "role": "offer",
+      "dur": 2,
+      "shot": "text_card",
+      "strategy": "graphic",
+      "camera": "static",
+      "transition_in": "slide",
+      "overlays": [
+        {
+          "kind": "price_tag",
+          "slot": "price",
+          "position": "center",
+          "emphasis": "big"
+        },
+        {
+          "kind": "badge_sticker",
+          "slot": "cod",
+          "position": "lower_third"
+        }
+      ]
+    }
+  ],
+  "rail": {
+    "enabled": true,
+    "slots": [
+      "price",
+      "strike",
+      "cod_delivery"
+    ],
+    "from_frame0": true
+  },
+  "end_card": {
+    "enabled": true,
+    "dur": 2,
+    "slots": [
+      "name",
+      "price",
+      "strike",
+      "cta",
+      "site"
+    ]
+  },
+  "copy": {
+    "framework": "offer_first",
+    "hook_patterns": [
+      "{name} بـ {price} فقط",
+      "{price} بدل {strike}"
+    ],
+    "primary_structure": "Price + crossed price first, then what's in the pack, then COD + delivery.",
+    "tone": "punchy"
+  },
+  "audio": {
+    "music": "beat_instrumental",
+    "voiceover": "none"
+  },
+  "fit": {
+    "categories": [
+      "packs",
+      "sacs"
+    ],
+    "requires": [
+      "compare_at"
+    ]
+  },
+  "dos": [
+    "Crossed price only when the store has a real compare-at price"
+  ],
+  "donts": [
+    "No fake countdowns"
+  ],
+  "status": "draft",
+  "created_from": "2026-11-04 DNA library (25 refs)"
+}

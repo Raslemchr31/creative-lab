@@ -1,0 +1,167 @@
+{
+  "id": "gift-reveal-pack",
+  "name": "Gift reveal (pack + free gift)",
+  "summary": "Frame 0 shows the full pack including the gift, then the gift gets its own beat with a «هدية» sticker, a macro proof beat, and an offer card.",
+  "why_it_wins": "The free-gift mechanic is the reason to order now. Owner rule: the gift is visible from frame 0, never hidden behind a box.",
+  "refs": [
+    {
+      "kind": "adlib",
+      "id": "1350521436517345",
+      "take": [
+        "piece-by-piece emphasis"
+      ],
+      "note": "gift beat replaces the hand-built pile"
+    },
+    {
+      "kind": "adlib",
+      "id": "930282729455144",
+      "take": [
+        "offer that upgrades during the ad"
+      ],
+      "note": null
+    }
+  ],
+  "format": "video",
+  "aspects": [
+    "9:16",
+    "4:5"
+  ],
+  "duration_s": 12,
+  "archetype": "gift_angle",
+  "hook_type": "gift_hook",
+  "angle": "gift",
+  "awareness": "product_aware",
+  "beats": [
+    {
+      "id": "b1",
+      "role": "hook",
+      "dur": 2.5,
+      "shot": "bundle_layout",
+      "strategy": "ai_plate_harmonize",
+      "ref_roles": [
+        "hero"
+      ],
+      "scene": "Soft blush-pink tabletop against a warm white wall, gentle morning light",
+      "composition": "an empty area of the tabletop in the lower-centre third where objects will be placed later",
+      "camera": "push_in",
+      "overlays": [
+        {
+          "kind": "headline",
+          "slot": "hook_text",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "role": "reveal",
+      "dur": 3,
+      "shot": "gift_reveal",
+      "strategy": "real_photo_motion",
+      "ref_roles": [
+        "gift",
+        "alt"
+      ],
+      "camera": "push_in",
+      "transition_in": "dissolve",
+      "overlays": [
+        {
+          "kind": "badge_sticker",
+          "slot": "gift",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b3",
+      "role": "detail",
+      "dur": 3,
+      "shot": "detail_macro",
+      "strategy": "ai_i2v",
+      "from_beat": "b1",
+      "camera": "macro_slide",
+      "motion": "Products stay rigid; only the camera moves",
+      "transition_in": "dissolve",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_1",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b4",
+      "role": "offer",
+      "dur": 2,
+      "shot": "text_card",
+      "strategy": "graphic",
+      "camera": "static",
+      "transition_in": "slide",
+      "overlays": [
+        {
+          "kind": "price_tag",
+          "slot": "price",
+          "position": "center",
+          "emphasis": "big"
+        },
+        {
+          "kind": "badge_sticker",
+          "slot": "cod",
+          "position": "lower_third"
+        }
+      ]
+    }
+  ],
+  "rail": {
+    "enabled": true,
+    "slots": [
+      "price",
+      "strike",
+      "cod_delivery"
+    ],
+    "from_frame0": true
+  },
+  "end_card": {
+    "enabled": true,
+    "dur": 2,
+    "slots": [
+      "name",
+      "price",
+      "strike",
+      "cta",
+      "site"
+    ]
+  },
+  "copy": {
+    "framework": "offer_first",
+    "hook_patterns": [
+      "{gift}",
+      "{name} + هدية"
+    ],
+    "primary_structure": "Gift first, what's in the pack, price, COD.",
+    "tone": "generous"
+  },
+  "audio": {
+    "music": "nasheed_vocal",
+    "voiceover": "none",
+    "notes": "Royalty-free only."
+  },
+  "fit": {
+    "categories": [
+      "packs"
+    ],
+    "requires": [
+      "gift",
+      "pack"
+    ]
+  },
+  "dos": [
+    "Gift must be the real gift item from the store"
+  ],
+  "donts": [
+    "Never show a gift box we don't ship"
+  ],
+  "status": "draft",
+  "created_from": "2026-11-04 DNA library (25 refs)"
+}

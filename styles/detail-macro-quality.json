@@ -1,0 +1,162 @@
+{
+  "id": "detail-macro-quality",
+  "name": "Quality macros (texture + hardware)",
+  "summary": "Full pack hit with a zoom punch at frame 0, then real detail beats on texture and hardware, then an AI orbit on the real composite, end card.",
+  "why_it_wins": "Macro proof is how an affordable pack earns trust (Cosmos 15-22 s macro take; Olinasac's calm warm-light pacing). The motion-hit opener stops the scroll; the rest proves material.",
+  "refs": [
+    {
+      "kind": "adlib",
+      "id": "1350521436517345",
+      "take": [
+        "macro slide beats"
+      ],
+      "note": null
+    },
+    {
+      "kind": "adlib",
+      "id": "850901013992608",
+      "take": [
+        "calm warm-light pacing"
+      ],
+      "note": "its hand demos need a shoot"
+    }
+  ],
+  "format": "video",
+  "aspects": [
+    "9:16",
+    "4:5"
+  ],
+  "duration_s": 12,
+  "archetype": "detail_closeup",
+  "hook_type": "motion_hit",
+  "angle": "quality_material",
+  "awareness": "solution_aware",
+  "beats": [
+    {
+      "id": "b1",
+      "role": "hook",
+      "dur": 2,
+      "shot": "bundle_layout",
+      "strategy": "ai_plate_composite",
+      "ref_roles": [
+        "hero"
+      ],
+      "scene": "Dark charcoal velvet surface, single warm raking key light, deep soft shadows",
+      "composition": "an empty area of the velvet in the lower-centre third where objects will be placed later",
+      "camera": "zoom_punch",
+      "overlays": [
+        {
+          "kind": "headline",
+          "slot": "hook_text",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "role": "detail",
+      "dur": 3,
+      "shot": "detail_macro",
+      "strategy": "real_photo_motion",
+      "ref_roles": [
+        "detail",
+        "alt"
+      ],
+      "camera": "macro_slide",
+      "transition_in": "dissolve",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_1",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b3",
+      "role": "detail",
+      "dur": 2.5,
+      "shot": "product_angle",
+      "strategy": "real_photo_motion",
+      "ref_roles": [
+        "alt"
+      ],
+      "camera": "tilt",
+      "transition_in": "dissolve",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_2",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b4",
+      "role": "proof",
+      "dur": 3,
+      "shot": "product_angle",
+      "strategy": "ai_i2v",
+      "from_beat": "b1",
+      "camera": "orbit",
+      "motion": "Products stay rigid; only the light catches the texture as the camera moves",
+      "transition_in": "dissolve",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_3",
+          "position": "upper_third"
+        }
+      ]
+    }
+  ],
+  "rail": {
+    "enabled": true,
+    "slots": [
+      "price",
+      "strike",
+      "cod_delivery"
+    ],
+    "from_frame0": true
+  },
+  "end_card": {
+    "enabled": true,
+    "dur": 2,
+    "slots": [
+      "name",
+      "price",
+      "strike",
+      "cta",
+      "site"
+    ]
+  },
+  "copy": {
+    "framework": "benefit_list",
+    "hook_patterns": [
+      "شوفي التفاصيل: {name}",
+      "{name} من قريب"
+    ],
+    "primary_structure": "Material/hardware details, price, COD, inspect before paying.",
+    "tone": "calm, premium"
+  },
+  "audio": {
+    "music": "beat_instrumental",
+    "voiceover": "none",
+    "notes": "Dark swells only, nothing at the cuts."
+  },
+  "fit": {
+    "categories": [
+      "packs",
+      "sacs"
+    ],
+    "requires": []
+  },
+  "dos": [
+    "Macro only on real photo pixels"
+  ],
+  "donts": [
+    "No AI-generated hardware or logos"
+  ],
+  "status": "draft",
+  "created_from": "2026-11-04 DNA library (25 refs)"
+}

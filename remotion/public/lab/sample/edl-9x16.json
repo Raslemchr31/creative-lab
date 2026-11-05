@@ -1,0 +1,209 @@
+{
+  "version": 1,
+  "id": "sample/9x16",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "durationInFrames": 240,
+  "lang": "ar",
+  "dir": "rtl",
+  "theme": {
+    "ink": "#0A0A0A",
+    "paper": "#F4F1EA",
+    "panel": "#101012",
+    "accent": "#FFFFFF",
+    "smoke": "#B9B4AB"
+  },
+  "safe": {
+    "top": 270,
+    "bottom": 1250,
+    "side": 65
+  },
+  "segments": [
+    {
+      "id": "b1",
+      "from": 0,
+      "frames": 75,
+      "transitionIn": {
+        "kind": "cut",
+        "frames": 0
+      },
+      "layers": [
+        {
+          "kind": "video",
+          "src": "lab/sample/hobo-model-clip.mp4",
+          "trimStart": 0.2,
+          "fit": "cover",
+          "bg": "#F4F1EA"
+        }
+      ],
+      "texts": [
+        {
+          "slot": "kicker",
+          "text": "جديد",
+          "style": "kicker",
+          "position": "upper_third",
+          "at": 0,
+          "until": null,
+          "emphasis": "normal"
+        },
+        {
+          "slot": "hook_text",
+          "text": "باك هوبو الجديد وصل",
+          "style": "headline",
+          "position": "upper_third",
+          "at": 0,
+          "until": null,
+          "emphasis": "normal"
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "from": 75,
+      "frames": 60,
+      "transitionIn": {
+        "kind": "push",
+        "frames": 10,
+        "dir": "R"
+      },
+      "layers": [
+        {
+          "kind": "image",
+          "src": "lab/sample/hobo-pack.jpg",
+          "fit": "cover",
+          "motion": {
+            "type": "push_in",
+            "amount": 0.08
+          }
+        }
+      ],
+      "texts": [
+        {
+          "slot": "angle",
+          "text": "ستايل كامل بسعر واحد",
+          "style": "headline",
+          "position": "top",
+          "at": 0.35,
+          "until": null,
+          "emphasis": "highlight"
+        },
+        {
+          "slot": "benefit",
+          "text": "شنطة هوبو كروكو مع سنيكرز مريحة تمشي بيها النهار كامل بلا ما تتعبي",
+          "style": "subtitle",
+          "position": "lower_third",
+          "at": 0.6,
+          "until": null,
+          "emphasis": "normal"
+        }
+      ]
+    },
+    {
+      "id": "b3",
+      "from": 135,
+      "frames": 60,
+      "transitionIn": {
+        "kind": "zoom",
+        "frames": 10
+      },
+      "layers": [
+        {
+          "kind": "fill",
+          "color": "#F4F1EA"
+        },
+        {
+          "kind": "cutout",
+          "src": "lab/sample/hobo-pack-cutout.png",
+          "box": {
+            "x": 0.2,
+            "y": 0.146,
+            "w": 0.6,
+            "h": 0.26
+          },
+          "shadow": true,
+          "motion": {
+            "type": "push_in",
+            "amount": 0.05
+          }
+        }
+      ],
+      "texts": [
+        {
+          "slot": "proof",
+          "text": "واش كاين في الباك؟",
+          "style": "checklist",
+          "position": "lower_third",
+          "at": 0.25,
+          "until": null,
+          "emphasis": "normal",
+          "items": [
+            "شنطة هوبو كروكو",
+            "سنيكرز كروكو مريحة",
+            "الدفع عند الاستلام"
+          ]
+        }
+      ]
+    }
+  ],
+  "rail": {
+    "enabled": true,
+    "fromFrame": 0,
+    "y": 1157,
+    "h": 86,
+    "items": [
+      {
+        "slot": "price",
+        "text": "4,200 دج"
+      },
+      {
+        "slot": "strike",
+        "text": "5,800 دج"
+      },
+      {
+        "slot": "cod_delivery",
+        "text": "الدفع عند الاستلام · 69 ولاية"
+      }
+    ]
+  },
+  "endCard": {
+    "enabled": true,
+    "from": 195,
+    "frames": 45,
+    "lines": [
+      {
+        "slot": "name",
+        "text": "باك هوبو"
+      },
+      {
+        "slot": "price",
+        "text": "4,200 دج"
+      },
+      {
+        "slot": "strike",
+        "text": "5,800 دج"
+      },
+      {
+        "slot": "cod_delivery",
+        "text": "الدفع عند الاستلام · 69 ولاية"
+      },
+      {
+        "slot": "cta",
+        "text": "اطلبي دروك"
+      },
+      {
+        "slot": "site",
+        "text": "sirinealgeria.store"
+      },
+      {
+        "slot": "phone",
+        "text": "0560299703"
+      }
+    ]
+  },
+  "audio": {
+    "src": "lab/sample/bed.wav",
+    "volume": 0.5,
+    "fadeOutFrames": 20
+  }
+}

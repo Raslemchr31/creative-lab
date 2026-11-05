@@ -1,0 +1,63 @@
+{
+  "family": "pack-classique",
+  "display_name": {
+    "ar": "باك كلاسيك",
+    "fr": "Pack Classique"
+  },
+  "pieces": [
+    {
+      "id": "tote",
+      "en": "structured leather-look tote with a front zip pocket",
+      "ar": "ساك",
+      "fr": "sac"
+    },
+    {
+      "id": "sneakers",
+      "en": "platform slip-on sneakers with white soles",
+      "ar": "سبادري",
+      "fr": "baskets"
+    },
+    {
+      "id": "pouch",
+      "en": "small zip pouch",
+      "ar": "تروسة",
+      "fr": "trousse",
+      "gift": true
+    }
+  ],
+  "benefits": {
+    "ar": [
+      "ساك + سبادري + تروسة",
+      "4 ألوان متوفرة"
+    ],
+    "fr": [
+      "Sac + baskets + trousse",
+      "4 coloris"
+    ]
+  },
+  "notes": "Store photos look AI-generated — get real packshots before L3+.",
+  "colourways": {
+    "pack-classique-beige": {
+      "name_en": "beige",
+      "hex": "#CDBBA0",
+      "in_stock": true
+    },
+    "pack-classique-marron": {
+      "name_en": "brown",
+      "hex": "#5E3A2A",
+      "in_stock": true
+    },
+    "pack-classique-noire": {
+      "name_en": "black",
+      "hex": "#1A1A1A",
+      "in_stock": true
+    },
+    "pack-classique-rose": {
+      "name_en": "blush pink",
+      "hex": "#E3B7B2",
+      "in_stock": true
+    }
+  },
+  "written_by": "claude from store photos 2026-11-01",
+  "confirmed_by_owner": false
+}

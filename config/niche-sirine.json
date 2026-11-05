@@ -1,0 +1,400 @@
+{
+  "_comment": "SIRINE niche definition for the spy collector + relevance scorer. Terms are matched on Arabic-normalized, lower-cased text (diacritics/tatweel stripped, alef/yaa/taa-marbuta unified). Queries: market=local (DZ), regional (MA/TN), inspiration (FR/global premium creative). Add competitor page ids under watch_pages as you discover them.",
+  "id": "sirine-bags-shoes",
+  "positive_terms": {
+    "fr": [
+      "sac",
+      "sacs",
+      "sac à main",
+      "sac a main",
+      "sacoche",
+      "pochette",
+      "bandoulière",
+      "bandouliere",
+      "cabas",
+      "cartable",
+      "portefeuille",
+      "baskets",
+      "sneakers",
+      "chaussures",
+      "sandales",
+      "mules",
+      "escarpins",
+      "claquettes",
+      "maroquinerie",
+      "sac à dos",
+      "sac a dos"
+    ],
+    "ar": [
+      "حقيبه",
+      "حقائب",
+      "حقيبة",
+      "شنطه",
+      "شنطة",
+      "صاك",
+      "ساك",
+      "صاكوش",
+      "ساكوش",
+      "سبادري",
+      "سبادرية",
+      "صباط",
+      "حذاء",
+      "احذيه",
+      "صندل",
+      "صنادل",
+      "كلاكيت",
+      "شلاكه"
+    ],
+    "en": [
+      "bag",
+      "bags",
+      "handbag",
+      "handbags",
+      "purse",
+      "tote",
+      "crossbody",
+      "clutch",
+      "sneakers",
+      "shoes",
+      "leather goods"
+    ]
+  },
+  "cod_terms": [
+    "الدفع عند الاستلام",
+    "الدفع عند الإستلام",
+    "عند الاستلام",
+    "التوصيل",
+    "توصيل",
+    "ولايه",
+    "ولاية",
+    "58 ولاية",
+    "69 ولاية",
+    "livraison",
+    "58 wilaya",
+    "69 wilaya",
+    "wilayas",
+    "paiement a la livraison",
+    "cash on delivery",
+    "cod"
+  ],
+  "fashion_categories": [
+    "vêtements",
+    "vetements",
+    "clothing",
+    "fashion",
+    "shopping",
+    "retail",
+    "accessoires",
+    "accessories",
+    "chaussures",
+    "shoe",
+    "bag",
+    "sac",
+    "boutique",
+    "marque",
+    "brand",
+    "mode"
+  ],
+  "negative_terms": [
+    "serie",
+    "série",
+    "episode",
+    "épisode",
+    "drama",
+    "regarder",
+    "doublage",
+    "doublé",
+    "film",
+    "poudre",
+    "تنحيف",
+    "تخسيس",
+    "مسمنة",
+    "كيلو",
+    "crypto",
+    "forex",
+    "trading",
+    "casino",
+    "formation",
+    "تكوين",
+    "immobilier",
+    "voiture",
+    "pneu",
+    "parfum",
+    "maquillage",
+    "cream",
+    "crème",
+    "cheveux",
+    "شعر",
+    "emballage",
+    "emballages",
+    "expédition",
+    "expedition",
+    "boxe",
+    "boxing",
+    "ملاكمة",
+    "امبلاج",
+    "مشط",
+    "peigne",
+    "lisseur",
+    "سشوار",
+    "photo editor",
+    "application",
+    "تطبيق",
+    "jouet",
+    "jouets",
+    "montessori",
+    "pari sportif",
+    "paris sportifs",
+    "couches",
+    "ضغط الدم",
+    "جهاز قياس",
+    "فراش",
+    "حلوى",
+    "مكسرات",
+    "عباية",
+    "عبايه",
+    "straps",
+    "gym",
+    "sac de rangement",
+    "تخزين",
+    "الوثائق",
+    "وثائق",
+    "المصحف",
+    "القران",
+    "طعام",
+    "isotherme",
+    "تلوين",
+    "coloriage",
+    "sac de sport",
+    "الحجاج",
+    "المعتمرين",
+    "valise",
+    "bagage cabine",
+    "حقيبة السفر",
+    "couche",
+    "cartable scolaire",
+    "trousse scolaire",
+    "perceuse",
+    "glacière",
+    "حقيبة المكياج",
+    "حقيبة مكياج",
+    "trousse de maquillage",
+    "organisateur",
+    "نظارة",
+    "نظارات",
+    "lunettes",
+    "كريك",
+    "cric",
+    "وجبة",
+    "وجبتك",
+    "للتجار",
+    "grossiste",
+    "الجملة",
+    "بالجملة",
+    "sac poubelle",
+    "sachet",
+    "sachets"
+  ],
+  "queries": [
+    {
+      "q": "sac",
+      "country": "DZ",
+      "market": "local"
+    },
+    {
+      "q": "sac femme",
+      "country": "DZ",
+      "market": "local"
+    },
+    {
+      "q": "pack sac",
+      "country": "DZ",
+      "market": "local"
+    },
+    {
+      "q": "sac à main",
+      "country": "DZ",
+      "market": "local"
+    },
+    {
+      "q": "حقيبة",
+      "country": "DZ",
+      "market": "local"
+    },
+    {
+      "q": "حقائب",
+      "country": "DZ",
+      "market": "local"
+    },
+    {
+      "q": "صاك",
+      "country": "DZ",
+      "market": "local"
+    },
+    {
+      "q": "ساك",
+      "country": "DZ",
+      "market": "local"
+    },
+    {
+      "q": "sacoche",
+      "country": "DZ",
+      "market": "local"
+    },
+    {
+      "q": "baskets femme",
+      "country": "DZ",
+      "market": "local"
+    },
+    {
+      "q": "sac",
+      "country": "MA",
+      "market": "regional"
+    },
+    {
+      "q": "sac",
+      "country": "TN",
+      "market": "regional"
+    },
+    {
+      "q": "sac à main femme",
+      "country": "FR",
+      "market": "inspiration"
+    }
+  ],
+  "watch_pages": [],
+  "premium_brands": [
+    {
+      "brand": "Charles & Keith",
+      "q": "Charles & Keith",
+      "country": "AE",
+      "match": [
+        "charles",
+        "keith"
+      ]
+    },
+    {
+      "brand": "Pedro",
+      "q": "Pedro shoes bags",
+      "country": "AE",
+      "match": [
+        "pedro"
+      ]
+    },
+    {
+      "brand": "Aldo",
+      "q": "Aldo shoes",
+      "country": "AE",
+      "match": [
+        "aldo"
+      ]
+    },
+    {
+      "brand": "Steve Madden",
+      "q": "Steve Madden",
+      "country": "AE",
+      "match": [
+        "steve madden"
+      ]
+    },
+    {
+      "brand": "Guess",
+      "q": "Guess handbags",
+      "country": "AE",
+      "match": [
+        "guess"
+      ]
+    },
+    {
+      "brand": "Michael Kors",
+      "q": "Michael Kors",
+      "country": "AE",
+      "match": [
+        "michael kors"
+      ]
+    },
+    {
+      "brand": "Coach",
+      "q": "Coach bag",
+      "country": "US",
+      "match": [
+        "coach"
+      ]
+    },
+    {
+      "brand": "Kate Spade",
+      "q": "Kate Spade",
+      "country": "US",
+      "match": [
+        "kate spade"
+      ]
+    },
+    {
+      "brand": "Tory Burch",
+      "q": "Tory Burch",
+      "country": "US",
+      "match": [
+        "tory burch"
+      ]
+    },
+    {
+      "brand": "JW PEI",
+      "q": "JW PEI",
+      "country": "US",
+      "match": [
+        "jw pei",
+        "jwpei"
+      ]
+    },
+    {
+      "brand": "Songmont",
+      "q": "Songmont",
+      "country": "US",
+      "match": [
+        "songmont"
+      ]
+    },
+    {
+      "brand": "Polène",
+      "q": "Polène Paris",
+      "country": "FR",
+      "match": [
+        "polene",
+        "polène"
+      ]
+    },
+    {
+      "brand": "Longchamp",
+      "q": "Longchamp",
+      "country": "FR",
+      "match": [
+        "longchamp"
+      ]
+    },
+    {
+      "brand": "Parfois",
+      "q": "Parfois",
+      "country": "FR",
+      "match": [
+        "parfois"
+      ]
+    },
+    {
+      "brand": "Kurt Geiger",
+      "q": "Kurt Geiger",
+      "country": "GB",
+      "match": [
+        "kurt geiger"
+      ]
+    },
+    {
+      "brand": "Furla",
+      "q": "Furla",
+      "country": "FR",
+      "match": [
+        "furla"
+      ]
+    }
+  ],
+  "_comment_premium": "premium_brands: big-name bag/shoe stores used as a HIGH-QUALITY inspiration segment (spy premium). Their pages are marked segment=premium; their ads are kept even without niche words, ranked inside the premium segment only. Never copy their marks, footage or music."
+}

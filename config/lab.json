@@ -1,0 +1,114 @@
+{
+  "_comment": "creative-lab runtime config. Machine-specific overrides go in config/lab.local.json (gitignored). Money: Kie.ai is billed in credits; usd_per_credit converts for display. Spend on Meta is NOT handled here — finished creatives are exported to ad-engine and launched only through the gated campaign-launch flow.",
+  "client": "sirine-01",
+  "db_file": "data/lab.db",
+  "ui_port": 4317,
+  "store": {
+    "site_url": "https://sirinealgeria.store",
+    "feed_url": "https://sirinealgeria.store/feed/meta.xml",
+    "storefront_package_json": "C:/Users/DELL/Downloads/SIRINE/storefront/package.json",
+    "turso_env_file": "C:/Users/DELL/Downloads/SIRINE/storefront/.env.turso.prod",
+    "product_url_template": "https://sirinealgeria.store/product/{slug}"
+  },
+  "spy": {
+    "chrome_channel": "chrome",
+    "headless": true,
+    "locale": "en-US",
+    "viewport": {
+      "width": 1280,
+      "height": 1800
+    },
+    "first_wait_ms": 2500,
+    "scroll_pause_ms": [
+      2500,
+      5000
+    ],
+    "max_scrolls": 60,
+    "stall_scrolls": 4,
+    "default_max_results": 150,
+    "between_queries_ms": [
+      20000,
+      45000
+    ],
+    "media": {
+      "download_top_n": 60,
+      "concurrency": 3,
+      "max_bytes": 209715200,
+      "timeout_ms": 120000
+    },
+    "default_sort": "impressions",
+    "first_wait_max_ms": 25000,
+    "max_searches_per_hour": 30
+  },
+  "scoring": {
+    "_comment": "winner score 0-100 = weighted mean of the AVAILABLE signals (unknown ones are dropped + weights renormalised), x0.3 for catalog/DPA, x0.85 if ended; niche-relevance gates visibility. impression = percentile in an impressions-sorted pull (web library sort_data=total_impressions, verified to reorder DZ results). See lib/scoring.mjs + research/02 §4.3.",
+    "weights": {
+      "longevity": 0.3,
+      "impression": 0.2,
+      "duplication": 0.15,
+      "relaunch": 0.1,
+      "page_survival": 0.1,
+      "page_scale": 0.08,
+      "breadth": 0.07
+    },
+    "longevity_knots_days": [
+      [
+        0,
+        0
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        7,
+        20
+      ],
+      [
+        14,
+        40
+      ],
+      [
+        30,
+        60
+      ],
+      [
+        60,
+        78
+      ],
+      [
+        120,
+        90
+      ],
+      [
+        240,
+        100
+      ]
+    ],
+    "min_relevance": 0.35,
+    "winner_min_score": 55,
+    "winner_min_days_local": 21,
+    "winner_min_days_other": 30
+  },
+  "tools": {
+    "vkit": "./vendor/vkit.mjs",
+    "compliance_validator": "./tools/validate-compliance.mjs",
+    "remotion_dir": "./remotion",
+    "ffmpeg": "ffmpeg",
+    "ffprobe": "ffprobe",
+    "magick": "magick"
+  },
+  "kie": {
+    "base_url": "https://api.kie.ai",
+    "upload_base_url": "https://kieai.redpandaai.co",
+    "usd_per_credit": 0.005,
+    "poll": {
+      "first_ms": 4000,
+      "max_interval_ms": 20000,
+      "timeout_ms": 1200000
+    },
+    "concurrency": 3,
+    "max_attempts_per_shot": 3,
+    "max_credits_per_batch": 4000
+  }
+}

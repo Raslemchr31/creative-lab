@@ -1,0 +1,117 @@
+{
+  "id": "premium-sunlit-sill",
+  "name": "Premium · bag alone in a real place",
+  "summary": "Film-photo still life: the bag alone on an old window sill against a colour-blocked plaster wall in open shade, warm grade and grain; slow push-in; 60% empty wall for the price + COD text.",
+  "why_it_wins": "Songmont 'Luna' (97 days, score 77.6): no person, no text, a real-looking place, complementary colour block so the bag is the only neutral. Reads as a magazine photo, not an ad.",
+  "refs": [
+    {
+      "kind": "adlib",
+      "id": "1378467954426288",
+      "take": [
+        "window-sill still life",
+        "colour block",
+        "film grade"
+      ],
+      "note": "Songmont set + design are ip_flags"
+    }
+  ],
+  "format": "video",
+  "aspects": [
+    "9:16",
+    "4:5"
+  ],
+  "duration_s": 8,
+  "archetype": "studio_showcase",
+  "hook_type": "colour_pop",
+  "angle": "style_trend",
+  "awareness": "unaware",
+  "beats": [
+    {
+      "id": "b1",
+      "role": "hook",
+      "dur": 4,
+      "shot": "lifestyle_scene",
+      "strategy": "ai_plate_harmonize",
+      "ref_roles": [
+        "hero"
+      ],
+      "scene": "An old ochre plaster wall with a weathered blue-green wooden window shutter and a deep stone sill, soft open-shade daylight, warm film grade with fine grain, Mediterranean medina feel",
+      "composition": "an empty stretch of the stone sill in the lower third where an object will be placed later",
+      "camera": "push_in",
+      "overlays": [
+        {
+          "kind": "headline",
+          "slot": "hook_text",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "role": "proof",
+      "dur": 3,
+      "shot": "product_angle",
+      "strategy": "ai_i2v",
+      "from_beat": "b1",
+      "camera": "pan",
+      "motion": "The product stays still; only a curtain edge and the light move slightly",
+      "transition_in": "dissolve",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_1",
+          "position": "upper_third"
+        }
+      ]
+    }
+  ],
+  "rail": {
+    "enabled": true,
+    "slots": [
+      "price",
+      "strike",
+      "cod_delivery"
+    ],
+    "from_frame0": true
+  },
+  "end_card": {
+    "enabled": true,
+    "dur": 2,
+    "slots": [
+      "name",
+      "price",
+      "strike",
+      "cta",
+      "site"
+    ]
+  },
+  "copy": {
+    "framework": "minimal",
+    "hook_patterns": [
+      "{name}",
+      "{name} — {colours}"
+    ],
+    "primary_structure": "Mood line, price, COD + delivery.",
+    "tone": "quiet, warm"
+  },
+  "audio": {
+    "music": "beat_instrumental",
+    "voiceover": "none"
+  },
+  "fit": {
+    "categories": [
+      "sacs",
+      "packs"
+    ],
+    "requires": []
+  },
+  "dos": [
+    "Keep 60% of the frame as empty wall for text"
+  ],
+  "donts": [
+    "No people",
+    "No other objects on the sill"
+  ],
+  "status": "draft",
+  "created_from": "2026-11-04 DNA library (25 refs)"
+}

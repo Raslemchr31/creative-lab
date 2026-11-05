@@ -1,0 +1,92 @@
+{
+  "id": "cod-trust-card",
+  "name": "Pay on delivery card (typographic static)",
+  "summary": "Typographic static: the product on a clean plate, the COD promise as the headline, an inspect-before-paying pill and the price. Trust over hype.",
+  "why_it_wins": "Competitors almost never put price + «الدفع عند الاستلام» on the creative itself; SIRINE's edge is trust for first-time COD buyers (convenience_cod).",
+  "refs": [
+    {
+      "kind": "adlib",
+      "id": "1885836288810525",
+      "take": [
+        "offer-first text hierarchy"
+      ],
+      "note": "inverted: the COD promise is the headline"
+    }
+  ],
+  "format": "image",
+  "aspects": [
+    "4:5",
+    "9:16"
+  ],
+  "duration_s": null,
+  "archetype": "typographic",
+  "hook_type": "offer_first",
+  "angle": "convenience_cod",
+  "awareness": "most_aware",
+  "beats": [
+    {
+      "id": "s1",
+      "role": "offer",
+      "dur": null,
+      "shot": "product_hero",
+      "strategy": "ai_plate_composite",
+      "ref_roles": [
+        "hero"
+      ],
+      "scene": "Flat warm off-white paper texture with a faint soft shadow, minimal",
+      "composition": "an empty area of the paper in the lower half where an object will be placed later",
+      "camera": "static",
+      "overlays": [
+        {
+          "kind": "headline",
+          "slot": "hook_text",
+          "position": "top",
+          "emphasis": "big"
+        },
+        {
+          "kind": "pill_labels",
+          "slot": "inspect",
+          "position": "upper_third"
+        },
+        {
+          "kind": "price_tag",
+          "slot": "price",
+          "position": "lower_third"
+        }
+      ]
+    }
+  ],
+  "rail": {
+    "enabled": false
+  },
+  "end_card": {
+    "enabled": false
+  },
+  "copy": {
+    "framework": "offer_first",
+    "hook_patterns": [
+      "{cod_delivery}",
+      "{cod} · {price}"
+    ],
+    "primary_structure": "COD + inspect before paying, delivery reach, product, price.",
+    "tone": "reassuring"
+  },
+  "audio": {
+    "music": "none"
+  },
+  "fit": {
+    "categories": [
+      "packs",
+      "sacs"
+    ],
+    "requires": []
+  },
+  "dos": [
+    "Type at thumbnail-readable size"
+  ],
+  "donts": [
+    "No 'guaranteed' wording"
+  ],
+  "status": "draft",
+  "created_from": "2026-11-04 DNA library (25 refs)"
+}

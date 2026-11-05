@@ -1,0 +1,504 @@
+{
+  "_comment": "Single source of the creative-lab vocabulary. DNA, style and job schemas reference these lists via x-enumRef. Add values here (never inline in code). Descriptions are what the analyst (Claude) and the UI show.",
+  "formats": [
+    "video",
+    "image",
+    "carousel",
+    "catalog"
+  ],
+  "aspects": [
+    "9:16",
+    "4:5",
+    "1:1",
+    "16:9",
+    "1.91:1",
+    "other"
+  ],
+  "languages": [
+    "ar-DZ",
+    "ar",
+    "fr",
+    "en",
+    "mixed",
+    "none"
+  ],
+  "archetypes": [
+    {
+      "id": "offer_stack",
+      "label": "Offer stack",
+      "desc": "Price + crossed price + bundle/gift + COD/delivery stacked as the message; product is proof."
+    },
+    {
+      "id": "bundle_reveal",
+      "label": "Bundle reveal",
+      "desc": "Pack contents revealed item by item (bag → shoes → gift)."
+    },
+    {
+      "id": "colour_range",
+      "label": "Colour range",
+      "desc": "All colourways side by side / sequential; choice is the hook."
+    },
+    {
+      "id": "studio_showcase",
+      "label": "Studio showcase",
+      "desc": "Clean studio hero shots, turntable/orbit, premium light."
+    },
+    {
+      "id": "detail_closeup",
+      "label": "Detail close-up",
+      "desc": "Macro on texture, hardware, stitching, inside lining — quality proof."
+    },
+    {
+      "id": "in_hand_demo",
+      "label": "In-hand demo",
+      "desc": "Hands open/close, show capacity, straps, what fits inside."
+    },
+    {
+      "id": "on_model_lifestyle",
+      "label": "On-model lifestyle",
+      "desc": "Worn/carried by a person in a real setting (street, café, event)."
+    },
+    {
+      "id": "ugc_review",
+      "label": "UGC review",
+      "desc": "Customer/creator talking or reacting to camera, phone-shot, testimonial."
+    },
+    {
+      "id": "unboxing",
+      "label": "Unboxing",
+      "desc": "Parcel/box opened, product revealed — delivery reassurance."
+    },
+    {
+      "id": "outfit_pairing",
+      "label": "Outfit pairing",
+      "desc": "Bag/shoes matched to outfits; 'goes with everything'."
+    },
+    {
+      "id": "comparison",
+      "label": "Comparison",
+      "desc": "Us vs them, boutique price vs ours, before/after organisation."
+    },
+    {
+      "id": "social_proof",
+      "label": "Social proof",
+      "desc": "Reviews, order screenshots, delivery photos, counts."
+    },
+    {
+      "id": "new_drop",
+      "label": "New drop / scarcity",
+      "desc": "New collection, limited stock, back in stock."
+    },
+    {
+      "id": "gift_angle",
+      "label": "Gift angle",
+      "desc": "Framed as a gift (for her, occasion, Eid/wedding season)."
+    },
+    {
+      "id": "craft_origin",
+      "label": "Craft / origin",
+      "desc": "Made locally, workshop, materials, behind the scenes."
+    },
+    {
+      "id": "store_tour",
+      "label": "Store / stock tour",
+      "desc": "Shelves, warehouse, many models — abundance and trust."
+    },
+    {
+      "id": "trend_meme",
+      "label": "Trend / meme",
+      "desc": "Native trend format, audio meme, POV skit."
+    },
+    {
+      "id": "typographic",
+      "label": "Typographic",
+      "desc": "Text-led static or motion text over minimal visual."
+    },
+    {
+      "id": "catalog_grid",
+      "label": "Catalog grid",
+      "desc": "Many products in a grid/collage with prices."
+    }
+  ],
+  "hook_types": [
+    {
+      "id": "price_shock",
+      "desc": "Price (often with crossed price) is the first thing seen."
+    },
+    {
+      "id": "offer_first",
+      "desc": "Bundle/gift/free delivery stated in frame 0."
+    },
+    {
+      "id": "product_reveal",
+      "desc": "Product appears/revealed with motion in the first second."
+    },
+    {
+      "id": "pattern_interrupt",
+      "desc": "Unexpected visual/action that stops the scroll."
+    },
+    {
+      "id": "question",
+      "desc": "On-screen or spoken question to the viewer."
+    },
+    {
+      "id": "pov",
+      "desc": "POV framing ('POV: you found…')."
+    },
+    {
+      "id": "bold_claim",
+      "desc": "Strong statement (quality, best, original) — check policy."
+    },
+    {
+      "id": "asmr",
+      "desc": "Satisfying sound/texture close-up (zips, clasps, leather)."
+    },
+    {
+      "id": "motion_hit",
+      "desc": "Fast zoom/orbit/whip on the product from frame 0."
+    },
+    {
+      "id": "face_reaction",
+      "desc": "Person reacting/speaking to camera in frame 0."
+    },
+    {
+      "id": "curiosity_gap",
+      "desc": "Withholds the payoff (what's inside, which colour)."
+    },
+    {
+      "id": "colour_pop",
+      "desc": "Striking colour/contrast composition."
+    },
+    {
+      "id": "social_proof_hook",
+      "desc": "Opens on reviews/orders/count."
+    },
+    {
+      "id": "new_arrival",
+      "desc": "'New'/'Nouveau'/«جديد» label opens the ad."
+    },
+    {
+      "id": "gift_hook",
+      "desc": "Gift box/«هدية» shown first."
+    }
+  ],
+  "angles": [
+    "value_price",
+    "bundle_value",
+    "gift",
+    "quality_material",
+    "style_trend",
+    "elegance_status",
+    "practical_capacity",
+    "convenience_cod",
+    "delivery_reach",
+    "local_origin",
+    "scarcity",
+    "social_proof",
+    "matching_set",
+    "versatility",
+    "comfort"
+  ],
+  "awareness": [
+    "unaware",
+    "problem_aware",
+    "solution_aware",
+    "product_aware",
+    "most_aware"
+  ],
+  "production_styles": [
+    "phone_ugc",
+    "studio",
+    "lifestyle_shoot",
+    "ai_generated",
+    "stock",
+    "static_design",
+    "screen_capture",
+    "mixed"
+  ],
+  "talent": [
+    "none",
+    "hands_only",
+    "faceless_body",
+    "model_face",
+    "creator_talking",
+    "voiceover_only"
+  ],
+  "camera_moves": [
+    "static",
+    "push_in",
+    "pull_out",
+    "orbit",
+    "pan",
+    "tilt",
+    "handheld",
+    "whip",
+    "zoom_punch",
+    "dolly",
+    "top_down",
+    "macro_slide",
+    "turntable"
+  ],
+  "transitions": [
+    "hard_cut",
+    "jump_cut",
+    "whip_pan",
+    "zoom_through",
+    "match_cut",
+    "dissolve",
+    "flash",
+    "slide",
+    "push",
+    "none"
+  ],
+  "overlay_styles": [
+    "none",
+    "subtitles",
+    "headline",
+    "price_tag",
+    "badge_sticker",
+    "pill_labels",
+    "checklist",
+    "countdown",
+    "arrow_pointer",
+    "split_compare",
+    "review_card",
+    "end_card"
+  ],
+  "text_density": [
+    "none",
+    "low",
+    "medium",
+    "high"
+  ],
+  "pace": [
+    "slow",
+    "medium",
+    "fast"
+  ],
+  "music": [
+    "none",
+    "trending_pop",
+    "nasheed_vocal",
+    "arabic_pop",
+    "beat_instrumental",
+    "asmr_foley",
+    "voiceover_bed",
+    "unknown"
+  ],
+  "voiceover": [
+    "none",
+    "darija_female",
+    "darija_male",
+    "msa_female",
+    "msa_male",
+    "french_female",
+    "french_male",
+    "english",
+    "unknown"
+  ],
+  "cta_types": [
+    "ORDER_NOW",
+    "SHOP_NOW",
+    "BUY_NOW",
+    "SEND_MESSAGE",
+    "WHATSAPP_MESSAGE",
+    "LEARN_MORE",
+    "GET_OFFER",
+    "CONTACT_US",
+    "SEE_MORE",
+    "VIEW_INSTAGRAM_PROFILE",
+    "MESSAGE_PAGE",
+    "OTHER",
+    "NONE"
+  ],
+  "copy_frameworks": [
+    "offer_first",
+    "pas",
+    "aida",
+    "benefit_list",
+    "story",
+    "question_hook",
+    "testimonial",
+    "minimal"
+  ],
+  "beat_roles": [
+    "hook",
+    "reveal",
+    "proof",
+    "detail",
+    "demo",
+    "offer",
+    "objection",
+    "social_proof",
+    "cta",
+    "end_card"
+  ],
+  "shot_types": [
+    {
+      "id": "product_hero",
+      "desc": "Whole product, centred, clean background."
+    },
+    {
+      "id": "product_angle",
+      "desc": "Product from a 3/4 or side angle."
+    },
+    {
+      "id": "detail_macro",
+      "desc": "Texture/hardware/stitching macro."
+    },
+    {
+      "id": "interior",
+      "desc": "Inside of the bag / capacity."
+    },
+    {
+      "id": "in_hand",
+      "desc": "Held/handled by hands (no face)."
+    },
+    {
+      "id": "on_model",
+      "desc": "Carried/worn by a person."
+    },
+    {
+      "id": "lifestyle_scene",
+      "desc": "Product placed in a real-world scene."
+    },
+    {
+      "id": "flat_lay",
+      "desc": "Top-down arrangement."
+    },
+    {
+      "id": "colour_lineup",
+      "desc": "All colourways in one frame."
+    },
+    {
+      "id": "bundle_layout",
+      "desc": "All pack items together (bag + shoes + gift)."
+    },
+    {
+      "id": "gift_reveal",
+      "desc": "Gift item revealed."
+    },
+    {
+      "id": "unboxing",
+      "desc": "Parcel opened — ONLY with real packaging photos."
+    },
+    {
+      "id": "text_card",
+      "desc": "Graphic card (offer, price, list) — rendered, never generated."
+    },
+    {
+      "id": "end_card",
+      "desc": "Brand end card — rendered."
+    }
+  ],
+  "generation_strategies": [
+    {
+      "id": "real_photo",
+      "rung": "L0",
+      "desc": "Approved store/owner photo as-is (fit/crop only)."
+    },
+    {
+      "id": "existing_footage",
+      "rung": "L0",
+      "desc": "Owner footage already shot (clips folder)."
+    },
+    {
+      "id": "needs_shoot",
+      "rung": "L0",
+      "desc": "Must be filmed for real (hands unboxing, try-on, demo, talking). Emits a shoot request; never generated."
+    },
+    {
+      "id": "real_photo_motion",
+      "rung": "L1",
+      "desc": "Real photo moved by the editor (push/pan/parallax) — zero generated pixels."
+    },
+    {
+      "id": "ai_plate_composite",
+      "rung": "L1",
+      "desc": "Real cut-out composited on an AI background plate; camera motion in Remotion."
+    },
+    {
+      "id": "ai_plate_harmonize",
+      "rung": "L2",
+      "desc": "L1 + AI relight/shadow of the flattened composite, then the real cut-out pasted back."
+    },
+    {
+      "id": "ai_image_edit",
+      "rung": "L3",
+      "desc": "Reference-conditioned edit (product held/worn); strict identity QA."
+    },
+    {
+      "id": "ai_image_compose",
+      "rung": "L3",
+      "desc": "Several real references (pack pieces/colourways) composed in one scene; strict QA."
+    },
+    {
+      "id": "ai_i2v",
+      "rung": "L4",
+      "desc": "Image-to-video from a REAL first frame (L0/L1 still); camera-only motion, ≤5 s, audio off."
+    },
+    {
+      "id": "ai_r2v",
+      "rung": "L5",
+      "desc": "Reference-to-video with a person (neck-down, no dialogue); highest risk, strict QA."
+    },
+    {
+      "id": "ai_t2i",
+      "rung": "plate",
+      "desc": "Text-to-image ONLY for product-free plates/backgrounds."
+    },
+    {
+      "id": "ai_t2v",
+      "rung": "broll",
+      "desc": "Text-to-video ONLY for product-free b-roll."
+    },
+    {
+      "id": "graphic",
+      "rung": "graphic",
+      "desc": "Rendered by Remotion (cards, price, end card)."
+    }
+  ],
+  "qa_dimensions": [
+    {
+      "id": "product_fidelity",
+      "desc": "Shape, colour, material, hardware, logo/brand marks match the reference photos."
+    },
+    {
+      "id": "artifacts",
+      "desc": "No warping, melting, morphing, extra straps/handles, broken hands/fingers."
+    },
+    {
+      "id": "invented_elements",
+      "desc": "No invented packaging/boxes/logos/text/extra products."
+    },
+    {
+      "id": "composition",
+      "desc": "Subject placement, safe zones respected, crop works for the placement."
+    },
+    {
+      "id": "style_match",
+      "desc": "Matches the style card / reference DNA intent."
+    },
+    {
+      "id": "brand_fit",
+      "desc": "Looks like SIRINE (premium-minimal, warm), not generic AI stock."
+    },
+    {
+      "id": "text_legibility",
+      "desc": "Overlay text readable on mobile, correct Arabic shaping, correct digits."
+    },
+    {
+      "id": "policy",
+      "desc": "No prohibited claims/personal-attribute phrasing; AI-disclosure needs noted."
+    }
+  ],
+  "fidelity_rungs": {
+    "L0": "real photo/footage",
+    "L1": "real cut-out on AI plate (pixel-identical)",
+    "L2": "AI harmonise + paste-back",
+    "L3": "reference-conditioned image (held/worn)",
+    "L4": "image-to-video from real first frame",
+    "L5": "reference-to-video with people",
+    "L6": "text-only product — BLOCKED"
+  }
+}

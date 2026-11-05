@@ -1,0 +1,47 @@
+{
+  "family": "pack-croco-trio",
+  "display_name": {
+    "ar": "طقم كروكو ثلاثي",
+    "fr": "Pack Croco Trio"
+  },
+  "pieces": [
+    {
+      "id": "tote",
+      "en": "croco-embossed shoulder tote",
+      "ar": "شنطة",
+      "fr": "sac",
+      "hardware": "gold zip, round embossed logo patch, small croco pouch on a gold clip"
+    },
+    {
+      "id": "pouch",
+      "en": "croco zip toiletry pouch",
+      "ar": "تروسة",
+      "fr": "trousse",
+      "gift": true
+    }
+  ],
+  "colourways": {
+    "pack-croco-trio-camel": {
+      "name_en": "cognac brown",
+      "hex": "#CB7F61",
+      "in_stock": true
+    },
+    "pack-croco-trio-noir": {
+      "name_en": "black",
+      "hex": "#1A1A1A",
+      "in_stock": true
+    },
+    "pack-croco-trio-rose": {
+      "name_en": "blush pink",
+      "hex": "#E8D5D0",
+      "in_stock": true
+    },
+    "pack-croco-trio-taupe": {
+      "name_en": "taupe beige",
+      "hex": "#CBC0B3",
+      "in_stock": true
+    }
+  },
+  "written_by": "claude from store photos 2026-11-01",
+  "confirmed_by_owner": false
+}

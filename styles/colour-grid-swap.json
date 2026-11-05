@@ -1,0 +1,177 @@
+{
+  "id": "colour-grid-swap",
+  "name": "Colour grid, pick your colour (video)",
+  "summary": "All colourways in one row at frame 0 with the colour names as pills, then the hero colour up close, then pull back to the row.",
+  "why_it_wins": "Maison and TOKYO colour-range winners make choosing a colour the hook (colour_pop). Frame 0 already answers 'which colours?', the first COD question in comments.",
+  "refs": [
+    {
+      "kind": "adlib",
+      "id": "995716683366949",
+      "take": [
+        "grid hook",
+        "colour swap"
+      ],
+      "note": null
+    },
+    {
+      "kind": "adlib",
+      "id": "1175846798043578",
+      "take": [
+        "colour cut rhythm"
+      ],
+      "note": null
+    },
+    {
+      "kind": "adlib",
+      "id": "27387020140954805",
+      "take": [
+        "split-screen colours in first 2 s"
+      ],
+      "note": null
+    }
+  ],
+  "format": "video",
+  "aspects": [
+    "9:16",
+    "4:5"
+  ],
+  "duration_s": 12,
+  "archetype": "colour_range",
+  "hook_type": "colour_pop",
+  "angle": "style_trend",
+  "awareness": "solution_aware",
+  "beats": [
+    {
+      "id": "b1",
+      "role": "hook",
+      "dur": 2.5,
+      "shot": "colour_lineup",
+      "strategy": "ai_image_compose",
+      "ref_roles": [
+        "family"
+      ],
+      "scene": "Identical cream plinths in a row against a soft sand wall, even studio light",
+      "composition": "All colourways at equal size, same angle",
+      "camera": "static",
+      "overlays": [
+        {
+          "kind": "headline",
+          "slot": "hook_text",
+          "position": "top"
+        },
+        {
+          "kind": "pill_labels",
+          "slot": "colours",
+          "position": "lower_third"
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "role": "reveal",
+      "dur": 3,
+      "shot": "product_hero",
+      "strategy": "real_photo_motion",
+      "ref_roles": [
+        "hero"
+      ],
+      "camera": "push_in",
+      "transition_in": "zoom_through",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_1",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b3",
+      "role": "detail",
+      "dur": 2.5,
+      "shot": "product_angle",
+      "strategy": "real_photo_motion",
+      "ref_roles": [
+        "alt"
+      ],
+      "camera": "pan",
+      "transition_in": "dissolve",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_2",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b4",
+      "role": "cta",
+      "dur": 2,
+      "shot": "colour_lineup",
+      "strategy": "ai_i2v",
+      "from_beat": "b1",
+      "camera": "pull_out",
+      "motion": "Products stay rigid; only the camera moves",
+      "transition_in": "dissolve",
+      "overlays": [
+        {
+          "kind": "pill_labels",
+          "slot": "colours",
+          "position": "lower_third"
+        }
+      ]
+    }
+  ],
+  "rail": {
+    "enabled": true,
+    "slots": [
+      "price",
+      "strike",
+      "cod_delivery"
+    ],
+    "from_frame0": true
+  },
+  "end_card": {
+    "enabled": true,
+    "dur": 2,
+    "slots": [
+      "name",
+      "price",
+      "strike",
+      "cta",
+      "site"
+    ]
+  },
+  "copy": {
+    "framework": "minimal",
+    "hook_patterns": [
+      "اختاري لونك: {colours}",
+      "{colours}"
+    ],
+    "primary_structure": "Colours first, then price + COD, then 'write your colour in the order form'.",
+    "tone": "light"
+  },
+  "audio": {
+    "music": "trending_pop",
+    "voiceover": "none",
+    "notes": "Royalty-free / licensed track only."
+  },
+  "fit": {
+    "categories": [
+      "packs",
+      "sacs"
+    ],
+    "requires": [
+      "multi_colour"
+    ]
+  },
+  "dos": [
+    "Only colours that are in stock"
+  ],
+  "donts": [
+    "Never invent a colourway the store doesn't sell"
+  ],
+  "status": "draft",
+  "created_from": "2026-11-04 DNA library (25 refs)"
+}

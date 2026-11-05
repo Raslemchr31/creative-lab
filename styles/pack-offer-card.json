@@ -1,0 +1,103 @@
+{
+  "id": "pack-offer-card",
+  "name": "Pack offer card (static)",
+  "summary": "Static card: the whole pack as a real cut-out on a calm AI plinth, headline naming the pieces, price tag and a COD/69-wilaya sticker.",
+  "why_it_wins": "Ranimo and Cosmos 'Pack 3' statics (feasibility 5/5) lead with the offer itself: item count + price in one glance. Cheap to make, easy to iterate by colour.",
+  "refs": [
+    {
+      "kind": "adlib",
+      "id": "1885836288810525",
+      "take": [
+        "layout",
+        "offer stack"
+      ],
+      "note": null
+    },
+    {
+      "kind": "adlib",
+      "id": "1372477411218357",
+      "take": [
+        "price tag",
+        "pack-count headline"
+      ],
+      "note": null
+    }
+  ],
+  "format": "image",
+  "aspects": [
+    "4:5",
+    "9:16"
+  ],
+  "duration_s": null,
+  "archetype": "offer_stack",
+  "hook_type": "offer_first",
+  "angle": "bundle_value",
+  "awareness": "product_aware",
+  "beats": [
+    {
+      "id": "s1",
+      "role": "offer",
+      "dur": null,
+      "shot": "bundle_layout",
+      "strategy": "ai_plate_harmonize",
+      "ref_roles": [
+        "hero"
+      ],
+      "scene": "Pale travertine plinth against a warm beige wall, soft daylight, gentle contact shadow",
+      "composition": "an empty area of the plinth top in the middle third where objects will be placed later",
+      "camera": "static",
+      "overlays": [
+        {
+          "kind": "headline",
+          "slot": "hook_text",
+          "position": "top"
+        },
+        {
+          "kind": "badge_sticker",
+          "slot": "cod_delivery",
+          "position": "upper_third"
+        },
+        {
+          "kind": "price_tag",
+          "slot": "price",
+          "position": "lower_third",
+          "emphasis": "big"
+        }
+      ]
+    }
+  ],
+  "rail": {
+    "enabled": false
+  },
+  "end_card": {
+    "enabled": false
+  },
+  "copy": {
+    "framework": "offer_first",
+    "hook_patterns": [
+      "{bundle_items}",
+      "{name} بـ {price}"
+    ],
+    "primary_structure": "Offer line (pieces + price), COD + delivery, colours, CTA.",
+    "tone": "direct"
+  },
+  "audio": {
+    "music": "none"
+  },
+  "fit": {
+    "categories": [
+      "packs"
+    ],
+    "requires": [
+      "pack"
+    ]
+  },
+  "dos": [
+    "Price and COD readable at thumbnail size"
+  ],
+  "donts": [
+    "No more than 4 text elements"
+  ],
+  "status": "draft",
+  "created_from": "2026-11-04 DNA library (25 refs)"
+}

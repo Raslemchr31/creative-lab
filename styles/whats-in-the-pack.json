@@ -1,0 +1,161 @@
+{
+  "id": "whats-in-the-pack",
+  "name": "What's in the pack? (checklist reveal)",
+  "summary": "Frame 0: full pack on a saturated backdrop with the question «واش كاين في الباك؟»; each next beat ticks one item; an AI orbit on the real composite closes.",
+  "why_it_wins": "Checklist ticks that land as each feature is shown (820442184068022) plus the saturated studio backdrop that makes dark leather pop (821662394349347). The question is answered within 2 s, so it isn't bait.",
+  "refs": [
+    {
+      "kind": "adlib",
+      "id": "820442184068022",
+      "take": [
+        "tick-as-shown checklist"
+      ],
+      "note": null
+    },
+    {
+      "kind": "adlib",
+      "id": "821662394349347",
+      "take": [
+        "saturated backdrop"
+      ],
+      "note": "its packing demo needs a shoot"
+    }
+  ],
+  "format": "video",
+  "aspects": [
+    "9:16",
+    "4:5"
+  ],
+  "duration_s": 11,
+  "archetype": "studio_showcase",
+  "hook_type": "curiosity_gap",
+  "angle": "matching_set",
+  "awareness": "problem_aware",
+  "beats": [
+    {
+      "id": "b1",
+      "role": "hook",
+      "dur": 2,
+      "shot": "bundle_layout",
+      "strategy": "ai_plate_composite",
+      "ref_roles": [
+        "hero"
+      ],
+      "scene": "Saturated cobalt-blue seamless backdrop, crisp even studio light",
+      "composition": "an empty area of the blue sweep floor in the lower-centre third where objects will be placed later",
+      "camera": "push_in",
+      "overlays": [
+        {
+          "kind": "headline",
+          "slot": "hook_text",
+          "position": "top"
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "role": "reveal",
+      "dur": 2.5,
+      "shot": "product_hero",
+      "strategy": "real_photo_motion",
+      "ref_roles": [
+        "hero"
+      ],
+      "camera": "push_in",
+      "transition_in": "hard_cut",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_1",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b3",
+      "role": "reveal",
+      "dur": 2.5,
+      "shot": "product_angle",
+      "strategy": "real_photo_motion",
+      "ref_roles": [
+        "alt"
+      ],
+      "camera": "pan",
+      "transition_in": "hard_cut",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_2",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b4",
+      "role": "proof",
+      "dur": 2.5,
+      "shot": "bundle_layout",
+      "strategy": "ai_i2v",
+      "from_beat": "b1",
+      "camera": "orbit",
+      "motion": "Products stay rigid on the blue sweep; only the camera moves",
+      "transition_in": "hard_cut",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_3",
+          "position": "upper_third"
+        }
+      ]
+    }
+  ],
+  "rail": {
+    "enabled": true,
+    "slots": [
+      "price",
+      "strike",
+      "cod_delivery"
+    ],
+    "from_frame0": true
+  },
+  "end_card": {
+    "enabled": true,
+    "dur": 2,
+    "slots": [
+      "name",
+      "price",
+      "strike",
+      "cta",
+      "site"
+    ]
+  },
+  "copy": {
+    "framework": "question_hook",
+    "hook_patterns": [
+      "واش كاين في الباك؟",
+      "واش كاين في {name}؟"
+    ],
+    "primary_structure": "Answer the question with the item list, then price + COD.",
+    "tone": "playful"
+  },
+  "audio": {
+    "music": "beat_instrumental",
+    "voiceover": "none"
+  },
+  "fit": {
+    "categories": [
+      "packs"
+    ],
+    "requires": [
+      "pack"
+    ]
+  },
+  "dos": [
+    "Answer the question by 2 s"
+  ],
+  "donts": [
+    "No 'read the description' bait"
+  ],
+  "status": "draft",
+  "created_from": "2026-11-04 DNA library (25 refs)"
+}

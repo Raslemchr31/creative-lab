@@ -1,0 +1,36 @@
+{
+  "family": "cabas-amazigh",
+  "display_name": {
+    "ar": "كابا أمازيغ",
+    "fr": "Cabas Amazigh"
+  },
+  "pieces": [
+    {
+      "id": "bag",
+      "en": "structured canvas tote with beige leather handles and an Amazigh-pattern ribbon stripe",
+      "ar": "كابا",
+      "fr": "cabas",
+      "hardware": "gold rings at the handles"
+    }
+  ],
+  "notes": "Store details contain منقوش (vulgar in Darija) — fix the listing.",
+  "colourways": {
+    "cabas-amazigh-beige": {
+      "name_en": "beige",
+      "hex": "#9C8A7C",
+      "in_stock": true
+    },
+    "cabas-amazigh-bleu": {
+      "name_en": "denim blue",
+      "hex": "#3A4E6B",
+      "in_stock": true
+    },
+    "cabas-amazigh-noir": {
+      "name_en": "black",
+      "hex": "#1A1A1A",
+      "in_stock": true
+    }
+  },
+  "written_by": "claude from store photos 2026-11-01",
+  "confirmed_by_owner": false
+}

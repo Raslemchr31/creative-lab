@@ -1,0 +1,159 @@
+{
+  "id": "bundle-stack-build",
+  "name": "Bundle build — count the pieces",
+  "summary": "Full pack on a shelf at frame 0, then each piece gets its own beat with a checklist tick, then pull back to the whole set. Price + COD rail from frame 0.",
+  "why_it_wins": "Cosmos Bags (bundle_reveal) makes the viewer count pieces before any price: a growing pile reads as value for COD pack buyers. We keep the counting but show the FULL pack in frame 0 (owner rule) and add the price/COD rail competitors never show.",
+  "refs": [
+    {
+      "kind": "adlib",
+      "id": "1350521436517345",
+      "take": [
+        "hook",
+        "detail macros",
+        "pull-out ending"
+      ],
+      "note": "hand-built version needs a shoot; we start from the finished pile"
+    }
+  ],
+  "format": "video",
+  "aspects": [
+    "9:16",
+    "4:5"
+  ],
+  "duration_s": 13,
+  "archetype": "bundle_reveal",
+  "hook_type": "product_reveal",
+  "angle": "bundle_value",
+  "awareness": "product_aware",
+  "beats": [
+    {
+      "id": "b1",
+      "role": "hook",
+      "dur": 2.5,
+      "shot": "bundle_layout",
+      "strategy": "ai_plate_harmonize",
+      "ref_roles": [
+        "hero"
+      ],
+      "scene": "Dark walnut shelf against a plain white wall, soft daylight from the left, one potted plant cut off at the frame edge",
+      "composition": "an empty stretch of the shelf in the lower-centre third where objects will be placed later",
+      "camera": "push_in",
+      "overlays": [
+        {
+          "kind": "headline",
+          "slot": "hook_text",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "role": "detail",
+      "dur": 3,
+      "shot": "detail_macro",
+      "strategy": "ai_i2v",
+      "from_beat": "b1",
+      "camera": "macro_slide",
+      "motion": "The product stays rigid; only the camera moves",
+      "transition_in": "dissolve",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_1",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b3",
+      "role": "detail",
+      "dur": 3,
+      "shot": "product_angle",
+      "strategy": "real_photo_motion",
+      "ref_roles": [
+        "alt"
+      ],
+      "camera": "pan",
+      "transition_in": "dissolve",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_2",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b4",
+      "role": "reveal",
+      "dur": 2.5,
+      "shot": "bundle_layout",
+      "strategy": "real_photo_motion",
+      "ref_roles": [
+        "hero"
+      ],
+      "camera": "pull_out",
+      "transition_in": "dissolve",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_3",
+          "position": "upper_third"
+        }
+      ]
+    }
+  ],
+  "rail": {
+    "enabled": true,
+    "slots": [
+      "price",
+      "strike",
+      "cod_delivery"
+    ],
+    "from_frame0": true
+  },
+  "end_card": {
+    "enabled": true,
+    "dur": 2,
+    "slots": [
+      "name",
+      "price",
+      "strike",
+      "cta",
+      "site"
+    ]
+  },
+  "copy": {
+    "framework": "benefit_list",
+    "hook_patterns": [
+      "{bundle_items} بسعر واحد",
+      "{name} — {bundle_items}",
+      "{name} بـ {price} فقط"
+    ],
+    "primary_structure": "Line 1 pieces + price; lines 2-4 one benefit per piece; line 5 COD + 69 wilayas + inspect before paying.",
+    "tone": "warm, concrete, Darija"
+  },
+  "audio": {
+    "music": "beat_instrumental",
+    "voiceover": "none",
+    "notes": "No SFX at cuts; the kick on the beat is the transition."
+  },
+  "fit": {
+    "categories": [
+      "packs"
+    ],
+    "requires": [
+      "pack"
+    ]
+  },
+  "dos": [
+    "Every piece of the pack visible in frame 0",
+    "One benefit per beat, tick lands while that piece is on screen"
+  ],
+  "donts": [
+    "No hands or unboxing (needs a shoot)",
+    "No watermark or competitor props"
+  ],
+  "status": "draft",
+  "created_from": "2026-11-04 DNA library (25 refs)"
+}

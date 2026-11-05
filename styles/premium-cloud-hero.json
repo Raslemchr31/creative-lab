@@ -1,0 +1,133 @@
+{
+  "id": "premium-cloud-hero",
+  "name": "Premium · bag on a white cloud",
+  "summary": "Big-brand calm: the bag small and alone on a vast white quilted cushion, overcast soft light, slow overhead descent, lots of negative space; price + COD rail added in the edit.",
+  "why_it_wins": "Polène's Felted Edition makes a small bag precious through scale and silence: one hard, defined object in a soft, matte, empty world. Glossy or dark SIRINE bags pop hardest on matte white.",
+  "refs": [
+    {
+      "kind": "adlib",
+      "id": "1830102428185695",
+      "take": [
+        "white quilted cushion set",
+        "scale contrast",
+        "overcast light"
+      ],
+      "note": "never the Polène bag, logo or models"
+    }
+  ],
+  "format": "video",
+  "aspects": [
+    "9:16",
+    "4:5"
+  ],
+  "duration_s": 10,
+  "archetype": "studio_showcase",
+  "hook_type": "product_reveal",
+  "angle": "elegance_status",
+  "awareness": "solution_aware",
+  "beats": [
+    {
+      "id": "b1",
+      "role": "hook",
+      "dur": 3.5,
+      "shot": "product_hero",
+      "strategy": "ai_plate_harmonize",
+      "ref_roles": [
+        "hero"
+      ],
+      "scene": "A vast pillowy white quilted cushion with deep tufted dimples and small cream buttons filling the frame, soft even overcast daylight from above",
+      "composition": "an empty dimple in the centre of the cushion where an object will be placed later",
+      "camera": "top_down",
+      "overlays": [
+        {
+          "kind": "headline",
+          "slot": "hook_text",
+          "position": "top"
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "role": "detail",
+      "dur": 3,
+      "shot": "detail_macro",
+      "strategy": "ai_i2v",
+      "from_beat": "b1",
+      "camera": "push_in",
+      "motion": "The product stays still; a soft highlight slides across its surface as the camera moves",
+      "transition_in": "dissolve",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_1",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b3",
+      "role": "reveal",
+      "dur": 2.5,
+      "shot": "product_angle",
+      "strategy": "real_photo_motion",
+      "ref_roles": [
+        "alt",
+        "hero"
+      ],
+      "camera": "pull_out",
+      "transition_in": "dissolve",
+      "overlays": []
+    }
+  ],
+  "rail": {
+    "enabled": true,
+    "slots": [
+      "price",
+      "strike",
+      "cod_delivery"
+    ],
+    "from_frame0": true
+  },
+  "end_card": {
+    "enabled": true,
+    "dur": 2,
+    "slots": [
+      "name",
+      "price",
+      "strike",
+      "cta",
+      "site"
+    ]
+  },
+  "copy": {
+    "framework": "minimal",
+    "hook_patterns": [
+      "{name}",
+      "{name} — {colours}"
+    ],
+    "primary_structure": "One quiet line about the look, then price, COD, delivery. No exclamation marks.",
+    "tone": "calm, premium"
+  },
+  "audio": {
+    "music": "beat_instrumental",
+    "voiceover": "none",
+    "notes": "Soft piano/ambient bed; nothing on the cuts."
+  },
+  "fit": {
+    "categories": [
+      "sacs",
+      "packs"
+    ],
+    "requires": []
+  },
+  "dos": [
+    "Product occupies about a third of the frame",
+    "Matte white set, no props"
+  ],
+  "donts": [
+    "No brand-like monograms on the set",
+    "No busy text"
+  ],
+  "status": "draft",
+  "created_from": "2026-11-04 DNA library (25 refs)"
+}

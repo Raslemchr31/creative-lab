@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "sample/4x5",
+  "width": 1080,
+  "height": 1350,
+  "fps": 30,
+  "durationInFrames": 1,
+  "lang": "ar",
+  "dir": "rtl",
+  "theme": { "ink": "#0A0A0A", "paper": "#F4F1EA", "panel": "#101012", "accent": "#FFFFFF", "smoke": "#B9B4AB" },
+  "safe": { "top": 60, "bottom": 1290, "side": 60 },
+  "segments": [
+    {
+      "id": "s1",
+      "from": 0,
+      "frames": 1,
+      "layers": [
+        { "kind": "fill", "color": "#F4F1EA" },
+        { "kind": "cutout", "src": "lab/sample/hobo-pack-cutout.png", "box": { "x": 0.16, "y": 0.175, "w": 0.68, "h": 0.5 }, "shadow": true, "motion": { "type": "none" } }
+      ],
+      "texts": [
+        { "slot": "hook_text", "text": "باك هوبو الجديد", "style": "headline", "position": "top", "at": 0, "until": null, "emphasis": "normal" },
+        { "slot": "badge", "text": "جديد", "style": "badge", "position": "upper_third", "at": 0, "until": null, "emphasis": "normal" },
+        { "slot": "price", "text": "4,200 دج", "style": "price_tag", "position": "lower_third", "at": 0, "until": null, "emphasis": "normal" },
+        { "slot": "cod", "text": "الدفع عند الاستلام · 69 ولاية", "style": "pill", "position": "lower_third", "at": 0, "until": null, "emphasis": "normal" }
+      ]
+    }
+  ],
+  "rail": null,
+  "endCard": null,
+  "audio": null
+}

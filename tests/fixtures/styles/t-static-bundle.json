@@ -1,0 +1,22 @@
+{
+  "id": "t-static-bundle",
+  "name": "TEST bundle price card",
+  "status": "draft",
+  "summary": "Test fixture: static 4:5 bundle card — real cut-out on an AI plate, price tag, COD badge.",
+  "refs": [],
+  "format": "image",
+  "aspects": ["4:5", "9:16"],
+  "duration_s": null,
+  "archetype": "offer_stack",
+  "hook_type": "offer_first",
+  "angle": "bundle_value",
+  "awareness": "product_aware",
+  "beats": [
+    { "id": "s1", "role": "offer", "dur": null, "shot": "bundle_layout", "strategy": "ai_plate_composite", "ref_roles": ["hero"], "scene": "Pale travertine plinth against a warm beige wall, soft daylight", "camera": "static", "overlays": [{ "kind": "headline", "slot": "hook_text", "position": "top" }, { "kind": "price_tag", "slot": "price", "position": "lower_third" }, { "kind": "badge_sticker", "slot": "cod_delivery", "position": "upper_third" }] }
+  ],
+  "rail": { "enabled": false },
+  "end_card": { "enabled": false },
+  "copy": { "framework": "offer_first", "hook_patterns": ["{name}", "{bundle_items}"] },
+  "audio": { "music": "none" },
+  "fit": { "categories": ["packs"] }
+}

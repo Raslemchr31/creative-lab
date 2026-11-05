@@ -1,0 +1,64 @@
+{
+  "_comment": "SIRINE brand kit for the creative lab. Mirrors remotion-studio/src/sirine/theme.ts + strings.ts and the owner rules recorded in ad-engine memory. The compiler reads ONLY from here + the store product — never invents offer facts.",
+  "id": "sirine",
+  "client": "sirine-01",
+  "name": { "latin": "SIRINE", "ar": "سيرين" },
+  "allowed_spellings": ["SIRINE", "Sirine", "sirine", "سيرين", "SIRINE®"],
+  "forbidden_spellings": ["SIRNE", "SIRENE", "SIREN", "SERINE", "SYRINE", "SIRIN", "سرين", "سيرن"],
+  "tagline": { "ar": "عنوان الأناقة والجمال" },
+  "site": "sirinealgeria.store",
+  "instagram": "@sirine_algeria",
+  "phone_whatsapp": "0560299703",
+  "origin": { "fr": "Tlemcen", "ar": "تلمسان" },
+  "audience": "Algerian women 22–45 buying bags/shoes/packs for themselves or as a gift; price-sensitive, COD-trusting, mobile-first; Darija first.",
+  "offer_lines": {
+    "ar-DZ": {
+      "cod": "الدفع عند الاستلام",
+      "delivery": "التوصيل لـ 69 ولاية",
+      "cod_delivery": "الدفع عند الاستلام · 69 ولاية",
+      "inspect": "افحصي سلعتك قدام الليفرور قبل ما تخلصي",
+      "cta": "اطلبي دروك",
+      "cta_message": "ابعثيلنا ميساج",
+      "new": "جديد",
+      "gift": "هدية",
+      "currency": "دج"
+    },
+    "fr": {
+      "cod": "Paiement à la livraison",
+      "delivery": "Livraison 69 wilayas",
+      "cod_delivery": "Paiement à la livraison · 69 wilayas",
+      "inspect": "Vérifiez votre colis devant le livreur avant de payer",
+      "cta": "Commandez maintenant",
+      "cta_message": "Écrivez-nous",
+      "new": "Nouveau",
+      "gift": "Offert",
+      "currency": "DA"
+    }
+  },
+  "palette": { "black": "#000000", "ink": "#0A0A0A", "panel": "#101012", "white": "#FFFFFF", "cream": "#F4F1EA", "smoke": "#B9B4AB" },
+  "fonts": { "ar": "Cairo", "latin": "Cairo" },
+  "look": "Premium-minimal, monochrome brand frame (black/white/cream) around warm, true-to-life product colour. Soft daylight or clean studio light; real textures; no neon, no glossy CGI, no fake luxury props.",
+  "safe_zones": {
+    "9:16": { "w": 1080, "h": 1920, "content_y": [270, 1150], "rail_y": [1157, 1243], "note": "Reels UI owns y<270 and y>1250 (captions, CTA, icons)." },
+    "4:5": { "w": 1080, "h": 1350, "content_y": [60, 1230], "rail_y": [1240, 1320], "note": "Feed: keep text 60 px from edges; primary text sits above the media." },
+    "1:1": { "w": 1080, "h": 1080, "content_y": [54, 1000], "rail_y": [1000, 1060] }
+  },
+  "never": [
+    "AI-generated text, logos, brand marks or price inside the image — all text is composited in the editor",
+    "invented packaging, boxes, shopping bags or tissue unless a real packaging photo is an approved reference",
+    "a mute 'talking' AI face, lip-sync avatars or fake testimonials",
+    "products, colours or accessories that are not in the store listing",
+    "luxury-brand marks, monograms or 'inspired by' references (Hermès, Chanel, Polène, Zara…)",
+    "SFX/whooshes on scene cuts; aggressive or fast cut pace on talking footage",
+    "raw URLs in the primary text; static utm_content values",
+    "the Arabic word نقش/منقوش (vulgar in Darija) and «حتى لباب دارك» (trips the HOUSING lint) — use «توصيل حتى لعندك»"
+  ],
+  "copy_rules": [
+    "One language per creative (ar-DZ default). Brand name, price digits and CTA enum don't count as mixing.",
+    "Western digits (0-9) for prices, even in Arabic. Price format: 4,200 دج / 4 200 DA.",
+    "Inspection promise wording only: «افحصي سلعتك قدام الليفرور قبل ما تخلصي» (never 'try it on').",
+    "Price, crossed price and gift must match the store product exactly (LP parity).",
+    "On ≤5 s COD videos, price + «الدفع عند الاستلام» must be legible at frame 0 and stay on screen."
+  ],
+  "defaults": { "language": "ar-DZ", "placements": ["9:16", "4:5"], "max_video_s": 30, "music": "licensed bed only (owner-approved list); never model-generated audio" }
+}

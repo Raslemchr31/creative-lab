@@ -1,0 +1,49 @@
+{
+  "family": "pack-croco",
+  "display_name": {
+    "ar": "طقم كروكو",
+    "fr": "Pack Croco"
+  },
+  "pieces": [
+    {
+      "id": "tote",
+      "en": "croco-embossed structured tote with two handles",
+      "ar": "حقيبة يد",
+      "fr": "sac à main",
+      "hardware": "2 gold rings at the handle base, small gold logo plate, detachable mini pouch on a gold clip"
+    },
+    {
+      "id": "crossbody",
+      "en": "croco half-moon flap crossbody",
+      "ar": "حقيبة كتف",
+      "fr": "sac bandoulière",
+      "hardware": "round logo charm and a tassel"
+    },
+    {
+      "id": "mules",
+      "en": "croco-embossed slide sandals with one wide strap",
+      "ar": "صندل",
+      "fr": "mules",
+      "gift": true
+    }
+  ],
+  "colourways": {
+    "pack-croco-beige": {
+      "name_en": "beige",
+      "hex": "#CBC0B3",
+      "in_stock": true
+    },
+    "pack-croco-noir": {
+      "name_en": "black",
+      "hex": "#1A1A1A",
+      "in_stock": true
+    },
+    "pack-croco-rose": {
+      "name_en": "blush pink",
+      "hex": "#EBD1CF",
+      "in_stock": true
+    }
+  },
+  "written_by": "claude from store photos 2026-11-01",
+  "confirmed_by_owner": false
+}

@@ -1,0 +1,138 @@
+{
+  "id": "premium-hard-sun-gloss",
+  "name": "Premium · hard sun on gloss",
+  "summary": "Hard backlit sun against a white rendered wall, crisp cast shadow and a drifting lens flare; highlights roll across glossy material; colour switch at the midpoint. Best for patent/vernis bags.",
+  "why_it_wins": "Longchamp (2026 drop): monochrome set so the bag is the only colour, hard sun + flare reads expensive, and the gloss highlight rolling over the patent is the quality proof.",
+  "refs": [
+    {
+      "kind": "adlib",
+      "id": "1586642362654973",
+      "take": [
+        "hard sun white wall",
+        "gloss highlight",
+        "colour switch"
+      ],
+      "note": "faces and Longchamp design not copied"
+    }
+  ],
+  "format": "video",
+  "aspects": [
+    "9:16",
+    "4:5"
+  ],
+  "duration_s": 9,
+  "archetype": "detail_closeup",
+  "hook_type": "motion_hit",
+  "angle": "quality_material",
+  "awareness": "solution_aware",
+  "beats": [
+    {
+      "id": "b1",
+      "role": "hook",
+      "dur": 3,
+      "shot": "product_hero",
+      "strategy": "ai_plate_composite",
+      "ref_roles": [
+        "hero"
+      ],
+      "scene": "A sunlit white rendered wall at noon with a crisp diagonal cast shadow, hard sun from behind camera-right, a soft lens flare at the frame edge",
+      "composition": "an empty patch of the wall in the centre where an object will be placed later",
+      "camera": "push_in",
+      "overlays": [
+        {
+          "kind": "headline",
+          "slot": "hook_text",
+          "position": "top"
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "role": "detail",
+      "dur": 3,
+      "shot": "detail_macro",
+      "strategy": "ai_i2v",
+      "from_beat": "b1",
+      "camera": "macro_slide",
+      "motion": "The product stays still; the sun highlight rolls slowly across the glossy surface",
+      "transition_in": "hard_cut",
+      "overlays": [
+        {
+          "kind": "checklist",
+          "slot": "benefit_1",
+          "position": "upper_third"
+        }
+      ]
+    },
+    {
+      "id": "b3",
+      "role": "reveal",
+      "dur": 2.5,
+      "shot": "colour_lineup",
+      "strategy": "ai_image_compose",
+      "ref_roles": [
+        "family"
+      ],
+      "scene": "The same sunlit white wall and hard shadow",
+      "composition": "side by side on a white ledge, evenly spaced",
+      "camera": "static",
+      "transition_in": "hard_cut",
+      "overlays": [
+        {
+          "kind": "pill_labels",
+          "slot": "colours",
+          "position": "lower_third"
+        }
+      ]
+    }
+  ],
+  "rail": {
+    "enabled": true,
+    "slots": [
+      "price",
+      "strike",
+      "cod_delivery"
+    ],
+    "from_frame0": true
+  },
+  "end_card": {
+    "enabled": true,
+    "dur": 2,
+    "slots": [
+      "name",
+      "price",
+      "strike",
+      "cta",
+      "site"
+    ]
+  },
+  "copy": {
+    "framework": "minimal",
+    "hook_patterns": [
+      "{name}",
+      "{colours}"
+    ],
+    "primary_structure": "Look line, colours, price, COD.",
+    "tone": "confident"
+  },
+  "audio": {
+    "music": "beat_instrumental",
+    "voiceover": "none"
+  },
+  "fit": {
+    "categories": [
+      "sacs"
+    ],
+    "requires": [
+      "multi_colour"
+    ]
+  },
+  "dos": [
+    "Keep AI motion ≤ 3 s — patent reflections warp in long clips"
+  ],
+  "donts": [
+    "No faces"
+  ],
+  "status": "draft",
+  "created_from": "2026-11-04 DNA library (25 refs)"
+}

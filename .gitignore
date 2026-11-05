@@ -1,0 +1,10 @@
+# creative-lab runtime — never commit
+data/
+node_modules/
+.env
+.env.*
+!.env.example
+config/lab.local.json
+dist/
+remotion/node_modules/
+remotion/out/

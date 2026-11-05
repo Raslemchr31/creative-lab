@@ -1,0 +1,173 @@
+{
+  "_comment": "ad-engine :: config/compliance-lexicon.json :: SAFETY-CRITICAL multilingual lint data for the compliance gate. THE machine source for banned-claim + personal-attribute (the 'you'+attribute trap) + restricted-category/SAC detection across en/fr/ar/ar-DZ. WHY THIS EXISTS: the prior linter was English-only, so Arabic/French/Darija ads — i.e. nearly ALL real Algeria creative — bypassed the gate entirely. This closes that hole. Consumed by skills/compliance-check/SKILL.md + agents/compliance-officer.md (G1 personal-attributes, G2 banned-claims, G4 SAC mis-declaration). Human-readable companion: playbooks/compliance-lexicon-multilang.md. Evidence: research/raw/compliance-policy.md (+ its fact-check, which overrides). SAC enum strings MUST match config/meta.json special_ad_categories.allowed_enum. THIS IS A DETECTION AID, NOT A SUBSTITUTE FOR HUMAN REVIEW — a clean lint never auto-approves; compliance-check still gates. Matching is CASE-INSENSITIVE and, for Arabic, DIACRITIC-INSENSITIVE (see matching_rules).",
+  "version": "1.0",
+  "languages_covered": ["en", "fr", "ar", "ar-DZ"],
+  "matching_rules": {
+    "_comment": "How a linter MUST normalize text before matching these terms. Critical for Arabic — diacritics (tashkeel), alef/hamza variants, and tatweel cause naive substring matches to miss real violations.",
+    "case_insensitive": true,
+    "match_on_fields": ["primary_text", "headline", "description", "on_image_text", "cta_context", "landing_page_text"],
+    "word_boundary_preferred": "Use word/token boundaries to cut false positives (e.g. EN 'cure' inside 'secure', 'manicure'; 'you' inside 'your' is intended). Multi-word phrases match as phrases.",
+    "arabic_normalization": {
+      "_comment": "Apply ALL of these to BOTH the input text AND the lexicon terms before comparing. Algeria/Maghreb writes Arabic with Western (Latin 0-9) digits — do not digit-transliterate.",
+      "strip_diacritics_tashkeel": "Remove U+064B..U+065F and U+0670 (fatha/damma/kasra/shadda/sukun/tanwin/superscript-alef).",
+      "strip_tatweel": "Remove U+0640 (kashida/tatweel).",
+      "normalize_alef": "أ إ آ ٱ -> ا",
+      "normalize_yaa": "ى -> ي",
+      "normalize_taa_marbuta": "ة -> ه (match either way; do not over-normalize that breaks meaning)",
+      "normalize_hamza_seats": "ؤ -> و, ئ -> ي (best-effort)",
+      "ignore_zero_width": "Strip U+200C/U+200D/U+200E/U+200F (ZWNJ/ZWJ/LRM/RLM)."
+    },
+    "darija_dual_script": {
+      "_comment": "Algerian Darija ships in Arabic script OR Latin 'arabizi' (3=ع, 7=ح, 9=ق, 5=خ, 2=glottal). Each ar-DZ list carries both. Match arabizi case-insensitively and tolerant of the digit-letters.",
+      "scan_both": true
+    },
+    "severity_default": "HARD_BLOCK",
+    "note": "personal_attribute_triggers fire ONLY on the PAIRING of a second-person pronoun within ~8 tokens of a protected-attribute term — neither alone is a block."
+  },
+
+  "banned_claims": {
+    "_comment": "G2. Absolute/guarantee/miracle/cure/get-rich/risk-free/unrealistic-timeline claims. HARD_BLOCK + return a qualified rewrite. Mirrors playbooks/compliance-redflags-dz.md §2. NOT exhaustive — a clean scan still requires human review.",
+    "en": [
+      "guaranteed", "guarantee", "100%", "100 percent", "risk-free", "risk free", "no risk",
+      "miracle", "miraculous", "cure", "cures", "heals", "healing", "permanently cures",
+      "permanent results", "works for everyone", "guaranteed results", "no side effects",
+      "get rich", "get rich quick", "double your money", "make money fast", "earn money fast",
+      "guaranteed income", "guaranteed job", "lose weight fast", "lose 10kg", "melt fat",
+      "burn fat overnight", "overnight results", "instant results", "results in days",
+      "clinically proven", "scientifically proven", "best in the world", "number one", "#1",
+      "foolproof", "fail-proof", "fully refunded", "money-back guaranteed"
+    ],
+    "fr": [
+      "garanti", "garantie", "garantis", "100%", "100 pour cent", "sans risque", "aucun risque",
+      "zéro risque", "miracle", "miraculeux", "guérit", "guérir", "guérison", "soigne",
+      "résultats garantis", "résultat garanti", "fonctionne pour tout le monde", "sans effets secondaires",
+      "devenez riche", "gagnez de l'argent", "argent facile", "doublez votre argent",
+      "revenu garanti", "emploi garanti", "perdez du poids rapidement", "perdez 10 kg",
+      "brûle les graisses", "fond la graisse", "résultats immédiats", "résultats en 3 jours",
+      "du jour au lendemain", "sans effort", "prouvé scientifiquement", "cliniquement prouvé",
+      "le meilleur au monde", "numéro 1", "infaillible", "remboursé à 100%", "satisfait ou remboursé garanti"
+    ],
+    "ar": [
+      "مضمون", "مضمونة", "نتيجة مضمونة", "نتائج مضمونة", "ضمان 100%", "بدون مخاطر", "بلا مخاطرة",
+      "خالي من المخاطر", "معجزة", "علاج", "يشفي", "شفاء تام", "يعالج نهائيا", "يصلح للجميع",
+      "بدون اثار جانبية", "اربح", "اربح المال", "ثروة", "اصبح غنيا", "دخل مضمون", "ربح مضمون",
+      "ضاعف اموالك", "وظيفة مضمونة", "تخسر الوزن بسرعة", "تخسر 10 كيلو", "حرق الدهون",
+      "نتائج فورية", "نتائج في ايام", "بين عشية وضحاها", "بدون مجهود", "مثبت علميا",
+      "مثبت طبيا", "الافضل في العالم", "الرقم واحد", "لا يفشل ابدا", "استرجاع كامل للمال"
+    ],
+    "ar-DZ": [
+      "مضمون", "مضمونة", "بلا خطر", "بلا ريسك", "بلا risk", "تشفى", "يداوي", "دواء سحري",
+      "تربح بزاف", "تولي غني", "فلوس بلا تعب", "دير الفلوس بسرعة", "خدمة مضمونة", "نتيجة مضمونة 100%",
+      "تنقص فالوزن بسرعة", "تنقص 10 كيلو", "تحرق الشحم", "نتيجة فالحين", "احسن واحد", "بلا حتى مشكل",
+      "madmoun", "bla risk", "bla khatar", "terbeh bezzaf", "twelli ghani", "flous bla t3eb",
+      "khedma madmouna", "ahsen wahed", "100% madmoun"
+    ]
+  },
+
+  "personal_attribute_triggers": {
+    "_comment": "G1, the 'you'+attribute trap. BLOCK only when a second_person pronoun co-occurs within ~8 tokens of a protected_attributes term. Catch indirect framing too (Meta upgraded the detector 2025-26). Mirrors playbooks/compliance-redflags-dz.md §1. Rewrite to product/benefit framing — never assert/imply the viewer HAS the attribute.",
+    "second_person_pronouns": {
+      "en": ["you", "your", "yours", "you're", "do you", "are you", "have you", "is your"],
+      "fr": ["tu", "toi", "ton", "ta", "tes", "te", "vous", "votre", "vos", "tu es", "êtes-vous", "avez-vous", "es-tu", "as-tu"],
+      "ar": ["انت", "انتَ", "انتِ", "انتم", "انتما", "هل انت", "عندك", "عندكم", "لديك", "راك", "راكي", "لك"],
+      "ar-DZ": ["نتا", "نتي", "نتوما", "راك", "راكي", "عندك", "عندكم", "ديالك", "واش راك", "ندير ليك", "ليك", "nta", "nti", "rak", "raki", "3andek", "dyalek", "lik"]
+    },
+    "protected_attributes": {
+      "_comment": "Grouped by protected class. A pronoun + ANY of these within the window = HARD_BLOCK. Classes mirror Meta's Personal Attributes policy (health, vulnerable financial status, age, body, religion/belief, relationship status, plus ethnicity/orientation/disability/criminal-voting/PII).",
+      "health": {
+        "en": ["diabetes", "blood sugar", "depression", "anxiety", "obesity", "acne", "overweight", "cancer", "mental health", "illness", "disease", "HIV", "addiction", "insomnia", "erectile", "infertility"],
+        "fr": ["diabète", "glycémie", "dépression", "anxiété", "obésité", "acné", "surpoids", "cancer", "maladie", "santé mentale", "insomnie", "addiction", "dépendance", "infertilité"],
+        "ar": ["السكري", "سكر الدم", "الاكتئاب", "القلق", "السمنة", "حب الشباب", "الوزن الزائد", "السرطان", "مرض", "الصحة النفسية", "الارق", "الادمان", "العقم", "ضعف"],
+        "ar-DZ": ["السكر", "سكر الدم", "الاكتئاب", "القلق", "السمنة", "حب الشباب", "المرض", "الادمان", "sokkar", "depression"]
+      },
+      "money": {
+        "en": ["debt", "in debt", "broke", "bad credit", "can't afford", "struggling financially", "bankrupt", "low income", "behind on bills", "unemployed", "out of money"],
+        "fr": ["dettes", "endetté", "fauché", "mauvais crédit", "difficultés financières", "faillite", "fins de mois", "sans le sou", "chômeur", "petit revenu", "surendetté"],
+        "ar": ["ديون", "مديون", "معسر", "افلاس", "ضائقة مالية", "بطالة", "عاطل", "دخل ضعيف", "مفلس", "متعثر ماليا"],
+        "ar-DZ": ["ديون", "مدين", "معسّر", "ماعندكش الفلوس", "بطال", "فلوسك", "dyoun", "battal", "flousek", "ma3andakch flous"]
+      },
+      "age": {
+        "en": ["senior", "seniors", "over 50", "over 60", "your age", "retirement", "retiree", "elderly", "middle-aged", "getting old"],
+        "fr": ["senior", "seniors", "plus de 50 ans", "votre âge", "retraite", "retraité", "âgé", "la cinquantaine", "troisième âge"],
+        "ar": ["كبار السن", "المتقاعدين", "التقاعد", "سنك", "في الخمسين", "مسن", "عمرك", "الشيخوخة"],
+        "ar-DZ": ["الشيبان", "المتقاعد", "عمرك", "كبير فالسن", "chibani", "3morek"]
+      },
+      "body": {
+        "en": ["overweight", "flabby", "belly fat", "your belly", "your weight", "cellulite", "wrinkles", "double chin", "bald", "balding", "saggy", "love handles", "fat"],
+        "fr": ["surpoids", "ventre", "votre ventre", "cellulite", "rides", "double menton", "chauve", "calvitie", "bourrelets", "peau flasque", "gras"],
+        "ar": ["الكرش", "الوزن الزائد", "السيلوليت", "التجاعيد", "الصلع", "ترهلات", "بطنك", "وزنك", "الدهون"],
+        "ar-DZ": ["الكرش", "كرشك", "الصلع", "التجاعيد", "الشحم", "بطنك", "karchek", "chham"]
+      },
+      "religion": {
+        "en": ["muslim", "christian", "jewish", "are you religious", "your faith", "practicing muslim", "your beliefs"],
+        "fr": ["musulman", "chrétien", "juif", "votre foi", "pratiquant", "êtes-vous croyant", "vos croyances"],
+        "ar": ["مسلم", "مسيحي", "يهودي", "ايمانك", "هل انت متدين", "ملتزم دينيا", "معتقداتك"],
+        "ar-DZ": ["مسلم", "متدين", "ايمانك", "راك مسلم", "msleme", "mtdayen"]
+      },
+      "relationship": {
+        "en": ["single", "divorced", "widowed", "find love", "are you lonely", "your marriage", "still single", "looking for love"],
+        "fr": ["célibataire", "divorcé", "veuf", "veuve", "trouvez l'amour", "êtes-vous seul", "votre mariage", "âme sœur"],
+        "ar": ["اعزب", "عازب", "مطلق", "ارمل", "هل انت وحيد", "تجد الحب", "زواجك", "تبحث عن الحب"],
+        "ar-DZ": ["عازب", "مطلق", "راك وحيد", "تلقى الحب", "زواجك", "3azeb", "wahdek"]
+      },
+      "other_protected": {
+        "_comment": "Ethnicity, sexual orientation, gender identity, disability, criminal/voting/union, and injected NAME/PII — also blocked when asserted of the viewer.",
+        "en": ["disabled", "handicap", "gay", "lesbian", "trans", "ethnicity", "criminal record", "did you vote", "union member", "your name"],
+        "fr": ["handicapé", "invalidité", "gay", "lesbienne", "trans", "origine ethnique", "casier judiciaire", "avez-vous voté"],
+        "ar": ["معاق", "اعاقة", "مثلي", "عرقك", "سجل جنائي", "هل صوتت", "اسمك"],
+        "ar-DZ": ["معاق", "اعاقة", "عرقك", "سميتك", "ismek"]
+      }
+    }
+  },
+
+  "restricted_category_terms": {
+    "_comment": "G4. Offer-type terms that, when detected, FORCE a special_ad_categories declaration (compare to the campaign's declared array — mismatch with [] = BLOCK as mis-declaration). Keyed by language, then by the EXACT SAC enum from config/meta.json special_ad_categories.allowed_enum. Reminder (fact-check): bare CREDIT is legacy/absorbed — default any loan/credit/banking/insurance/investment to FINANCIAL_PRODUCTS_SERVICES. ISSUES_ELECTIONS_POLITICS is EU-banned. crypto/pharma/alcohol/weapons need AUTHORIZATION (G3) which is separate from SAC — flagged under _authorization_only. For Algeria apparel/academy COD the correct answer is almost always [].",
+    "en": {
+      "FINANCIAL_PRODUCTS_SERVICES": ["loan", "loans", "credit", "credit card", "financing", "installment", "pay in installments", "buy now pay later", "mortgage", "banking", "bank account", "savings account", "insurance", "life insurance", "investment", "invest", "trading", "forex"],
+      "EMPLOYMENT": ["job", "jobs", "hiring", "we're hiring", "recruiting", "recruitment", "apply now", "vacancy", "career opportunity", "work from home", "internship", "get hired", "join our team"],
+      "HOUSING": ["for rent", "for sale", "real estate", "property", "apartment", "villa", "home loan", "listing", "lease", "rental"],
+      "ONLINE_GAMBLING_AND_GAMING": ["betting", "bet now", "gambling", "casino", "poker", "sports betting", "lottery", "jackpot", "real money game", "odds", "wager"],
+      "ISSUES_ELECTIONS_POLITICS": ["vote", "election", "candidate", "political party", "campaign", "referendum", "elect", "social issue", "immigration policy", "civil rights"]
+    },
+    "fr": {
+      "FINANCIAL_PRODUCTS_SERVICES": ["prêt", "crédit", "carte de crédit", "financement", "paiement en plusieurs fois", "facilités de paiement", "hypothèque", "banque", "compte bancaire", "épargne", "assurance", "assurance-vie", "investissement", "investir", "trading", "placement"],
+      "EMPLOYMENT": ["emploi", "offre d'emploi", "recrutement", "recrute", "embauche", "postulez", "poste à pourvoir", "carrière", "travail à domicile", "stage", "nous recrutons", "rejoignez notre équipe"],
+      "HOUSING": ["à louer", "à vendre", "immobilier", "bien immobilier", "appartement", "villa", "crédit immobilier", "location", "agence immobilière"],
+      "ONLINE_GAMBLING_AND_GAMING": ["paris", "pari sportif", "parier", "jeux d'argent", "casino", "poker", "loterie", "jackpot", "mise", "cote"],
+      "ISSUES_ELECTIONS_POLITICS": ["vote", "élection", "candidat", "parti politique", "campagne", "référendum", "élisez", "enjeu de société", "immigration"]
+    },
+    "ar": {
+      "FINANCIAL_PRODUCTS_SERVICES": ["قرض", "قروض", "ائتمان", "تمويل", "تقسيط", "بالتقسيط", "رهن عقاري", "بنك", "حساب بنكي", "ادخار", "تامين", "تامين على الحياة", "استثمار", "تداول", "عملة رقمية", "بيتكوين"],
+      "EMPLOYMENT": ["وظيفة", "وظائف", "توظيف", "نوظف", "التحق بنا", "تقدم الان", "فرصة عمل", "عمل من المنزل", "تدريب", "انضم لفريقنا"],
+      "HOUSING": ["للايجار", "للبيع", "عقار", "عقارات", "شقة", "فيلا", "قرض سكني", "استئجار", "وكالة عقارية"],
+      "ONLINE_GAMBLING_AND_GAMING": ["مراهنة", "رهان", "قمار", "كازينو", "بوكر", "يانصيب", "جائزة كبرى", "العاب بمال حقيقي", "مراهنات رياضية"],
+      "ISSUES_ELECTIONS_POLITICS": ["انتخابات", "صوت", "مرشح", "حزب سياسي", "حملة انتخابية", "استفتاء", "قضية اجتماعية", "الهجرة"]
+    },
+    "ar-DZ": {
+      "FINANCIAL_PRODUCTS_SERVICES": ["قرض", "كريدي", "بالتقسيط", "تقسيط", "سلفة", "تامين", "استثمار", "بيتكوين", "kredi", "taqsit", "selfa"],
+      "EMPLOYMENT": ["خدمة", "نوظفو", "منصب", "بوسط", "فرصة خدمة", "خدمة من الدار", "khedma", "mansab", "post"],
+      "HOUSING": ["للكراء", "للبيع", "عقار", "شقة", "فيلا", "دار", "lel kra", "dar", "cha9a"],
+      "ONLINE_GAMBLING_AND_GAMING": ["مراهنة", "رهان", "قمار", "كازينو", "يانصيب", "pari", "qmar"],
+      "ISSUES_ELECTIONS_POLITICS": ["انتخابات", "صوّت", "مرشح", "حزب", "حملة", "استفتاء", "intikhabat"]
+    },
+    "_authorization_only": {
+      "_comment": "These need an authorization flag on file (G3) — NOT a SAC declaration. Detecting them with no authorization=true in the client config/spec = BLOCK. Crypto = 3-tier authorization since Mar 2026.",
+      "en": ["crypto", "cryptocurrency", "bitcoin", "supplement", "weight-loss pill", "pharmaceutical", "cbd", "alcohol", "tobacco", "vape", "weapon", "ammunition", "dating"],
+      "fr": ["crypto", "cryptomonnaie", "bitcoin", "complément alimentaire", "pilule minceur", "pharmaceutique", "cbd", "alcool", "tabac", "arme", "munition", "rencontre"],
+      "ar": ["عملة رقمية", "بيتكوين", "مكمل غذائي", "حبوب التخسيس", "دواء", "كحول", "تبغ", "سلاح", "ذخيرة", "مواعدة"],
+      "ar-DZ": ["بيتكوين", "مكمل", "حبوب التخسيس", "كحول", "سلاح", "bitcoin", "vape"]
+    }
+  },
+
+  "_notes": [
+    "DETECTION AID, NOT A SUBSTITUTE FOR HUMAN REVIEW: a clean scan does NOT auto-approve. compliance-check remains the HARD gate and a human signs off before launch.",
+    "Arabic matching MUST be diacritic-insensitive and alef/yaa/tatweel-normalized (see matching_rules.arabic_normalization) — otherwise tashkeel and alef-hamza variants silently bypass the gate.",
+    "ENGLISH-ONLY WAS THE HOLE: before this file the linter only scanned English, so French/Arabic/Darija ads (≈ all real Algeria creative) passed unchecked. Always scan in the creative's declared language (config/languages.json) AND opportunistically across all four.",
+    "ONE LANGUAGE PER CREATIVE (config/languages.json one_language_per_creative): scan each creative in its single declared language; a mixed-language body is itself a quality flag.",
+    "Darija ships in Arabic script OR Latin 'arabizi' — each ar-DZ list carries both; scan both variants.",
+    "Maghreb uses WESTERN (Latin 0-9) digits even in Arabic — do not digit-transliterate during normalization.",
+    "personal_attribute_triggers fire on the PAIRING only (pronoun WITHIN ~8 tokens of an attribute); neither alone blocks. 'you/your' without a protected attribute is fine.",
+    "SAC enum strings here MUST stay in sync with config/meta.json special_ad_categories.allowed_enum. CREDIT is legacy/absorbed -> default to FINANCIAL_PRODUCTS_SERVICES. ISSUES_ELECTIONS_POLITICS is EU-banned (block EU geos).",
+    "Lists are representative, not exhaustive. Add new real-world terms here AND to playbooks/compliance-lexicon-multilang.md when discovered (POST-BUILD knowledge persistence)."
+  ]
+}

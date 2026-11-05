@@ -1,0 +1,17 @@
+{
+  "name": "sirine-creative-lab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Creative Lab: spy on winning Meta ads, build a creative-DNA library, compile product x style batches, generate with Kie.ai, audit, assemble. Node 22, zero runtime deps except playwright-core (drives the system Chrome).",
+  "type": "module",
+  "engines": { "node": ">=22.13" },
+  "bin": { "lab": "./cli.mjs" },
+  "scripts": {
+    "lab": "node --no-warnings cli.mjs",
+    "test": "node --no-warnings tests/run.mjs",
+    "ui": "node --no-warnings server/server.mjs"
+  },
+  "dependencies": {
+    "playwright-core": "1.61.0"
+  }
+}

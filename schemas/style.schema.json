@@ -1,0 +1,468 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Style card — a reusable, product-agnostic recipe distilled from one or more reference DNAs",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "summary",
+    "refs",
+    "format",
+    "aspects",
+    "archetype",
+    "hook_type",
+    "angle",
+    "beats",
+    "copy",
+    "audio",
+    "fit"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "slot": {
+      "enum": [
+        "hook_text",
+        "price",
+        "strike",
+        "cod",
+        "delivery",
+        "cod_delivery",
+        "gift",
+        "bundle_items",
+        "colours",
+        "new_badge",
+        "cta",
+        "site",
+        "name",
+        "inspect",
+        "benefit_1",
+        "benefit_2",
+        "benefit_3",
+        "kicker",
+        "question",
+        "review",
+        "phone"
+      ]
+    },
+    "overlay": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slot"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "x-enumRef": "overlay_styles"
+        },
+        "slot": {
+          "$ref": "#/$defs/slot"
+        },
+        "position": {
+          "enum": [
+            "top",
+            "upper_third",
+            "center",
+            "lower_third",
+            "rail"
+          ]
+        },
+        "at": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Seconds into the beat when it appears (default 0)."
+        },
+        "emphasis": {
+          "enum": [
+            "normal",
+            "big",
+            "highlight"
+          ]
+        }
+      }
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,60}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 80
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "approved",
+        "retired"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 600
+    },
+    "why_it_wins": {
+      "type": "string",
+      "maxLength": 600
+    },
+    "refs": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "id"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "adlib",
+              "own",
+              "manual"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "take": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 300
+          }
+        }
+      }
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "video",
+        "image",
+        "carousel"
+      ]
+    },
+    "aspects": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "9:16",
+          "4:5",
+          "1:1"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "duration_s": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 60
+    },
+    "archetype": {
+      "type": "string",
+      "x-enumRef": "archetypes"
+    },
+    "hook_type": {
+      "type": "string",
+      "x-enumRef": "hook_types"
+    },
+    "angle": {
+      "type": "string",
+      "x-enumRef": "angles"
+    },
+    "awareness": {
+      "type": "string",
+      "x-enumRef": "awareness"
+    },
+    "beats": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "shot",
+          "strategy"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_-]{1,24}$"
+          },
+          "role": {
+            "type": "string",
+            "x-enumRef": "beat_roles"
+          },
+          "dur": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0.3,
+            "maximum": 15,
+            "description": "Seconds (video). Null for static panels."
+          },
+          "shot": {
+            "type": "string",
+            "x-enumRef": "shot_types"
+          },
+          "strategy": {
+            "type": "string",
+            "x-enumRef": "generation_strategies"
+          },
+          "ref_roles": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "hero",
+                "alt",
+                "detail",
+                "in_hand",
+                "on_model",
+                "packaging",
+                "gift",
+                "any",
+                "family"
+              ]
+            },
+            "description": "Which product reference photos feed this beat. 'family' = every colourway of the product line."
+          },
+          "scene": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 400,
+            "description": "Setting/background/props/light, product-agnostic."
+          },
+          "composition": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 300
+          },
+          "camera": {
+            "type": "string",
+            "x-enumRef": "camera_moves"
+          },
+          "motion": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 300,
+            "description": "For ai_i2v / real_photo_motion: what moves and how (product itself stays rigid)."
+          },
+          "talent": {
+            "type": "string",
+            "x-enumRef": "talent"
+          },
+          "transition_in": {
+            "type": "string",
+            "x-enumRef": "transitions"
+          },
+          "model_pref": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 3
+          },
+          "from_beat": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ai_i2v start frame = output of this beat's image."
+          },
+          "overlays": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/overlay"
+            },
+            "maxItems": 4
+          }
+        }
+      }
+    },
+    "rail": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "slots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/slot"
+          },
+          "maxItems": 3
+        },
+        "from_frame0": {
+          "type": "boolean"
+        }
+      }
+    },
+    "end_card": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "dur": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 5
+        },
+        "slots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/slot"
+          },
+          "maxItems": 6
+        }
+      }
+    },
+    "copy": {
+      "type": "object",
+      "required": [
+        "framework"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "framework": {
+          "type": "string",
+          "x-enumRef": "copy_frameworks"
+        },
+        "hook_patterns": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "maxItems": 6,
+          "description": "Patterns with {slots}, e.g. «{name} بـ {price} فقط»"
+        },
+        "primary_structure": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 400
+        },
+        "tone": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        }
+      }
+    },
+    "audio": {
+      "type": "object",
+      "required": [
+        "music"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "music": {
+          "type": "string",
+          "x-enumRef": "music"
+        },
+        "voiceover": {
+          "type": "string",
+          "x-enumRef": "voiceover"
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        }
+      }
+    },
+    "fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "sacs",
+              "chaussures",
+              "packs"
+            ]
+          }
+        },
+        "requires": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "gift",
+              "compare_at",
+              "multi_colour",
+              "pack",
+              "in_hand_photo",
+              "on_model_photo",
+              "packaging_photo"
+            ]
+          }
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        }
+      }
+    },
+    "dos": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 200
+      },
+      "maxItems": 8
+    },
+    "donts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 200
+      },
+      "maxItems": 8
+    },
+    "created_from": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

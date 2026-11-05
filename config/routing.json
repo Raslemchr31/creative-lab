@@ -1,0 +1,222 @@
+{
+  "_comment": "Strategy → Kie route. Model ids + fields verified against config/kie-models.json (research/03, 2026-11-01). Defaults are merged into every request; the compiler fills prompt + reference fields. 'draft' overrides apply with --draft (cheap preview pass). Change models here, never in code.",
+  "routes": {
+    "cutout": {
+      "model": "recraft/remove-background",
+      "ref_field": "image",
+      "defaults": {},
+      "candidates": 1
+    },
+    "plate_still": {
+      "model": "flux-3/klein-text-to-image",
+      "fallback": [
+        "nano-banana-2-1"
+      ],
+      "defaults": {
+        "enhance_prompt": false,
+        "output_format": "png",
+        "num_images": 1,
+        "resolution": "2K"
+      },
+      "sizes": {
+        "9:16": [
+          1152,
+          2048
+        ],
+        "4:5": [
+          1088,
+          1360
+        ],
+        "1:1": [
+          1360,
+          1360
+        ]
+      },
+      "candidates": 2,
+      "positive_only": true
+    },
+    "harmonize": {
+      "model": "nano-banana-pro",
+      "ref_field": "image_input",
+      "defaults": {
+        "resolution": "2K",
+        "output_format": "png"
+      },
+      "candidates": 1
+    },
+    "image_edit": {
+      "model": "gpt-image-2-5-sunburst-image-to-image",
+      "fallback": [
+        "nano-banana-2-1",
+        "nano-banana-pro"
+      ],
+      "ref_field": "input_urls",
+      "defaults": {
+        "resolution": "2K",
+        "background": "opaque"
+      },
+      "aspect_map": {
+        "4:5": "3:4",
+        "9:16": "9:16",
+        "1:1": "1:1"
+      },
+      "candidates": 2
+    },
+    "image_compose": {
+      "model": "nano-banana-pro",
+      "fallback": [
+        "gpt-image-2-5-sunburst-image-to-image"
+      ],
+      "ref_field": "image_input",
+      "defaults": {
+        "resolution": "2K",
+        "output_format": "png"
+      },
+      "candidates": 2
+    },
+    "i2v": {
+      "model": "kling-3.0-omni/image-to-video",
+      "fallback": [
+        "bytedance/seedance-2",
+        "veo-3-1"
+      ],
+      "ref_field": "image_urls",
+      "defaults": {
+        "audio": false,
+        "resolution": "720p",
+        "aspect_ratio": "auto",
+        "duration": 5
+      },
+      "max_duration": 5,
+      "candidates": 2
+    },
+    "r2v": {
+      "model": "kling-3.0-omni/image-to-video",
+      "fallback": [
+        "google/gemini-omni-flash-1-1"
+      ],
+      "ref_field": "image_urls",
+      "defaults": {
+        "audio": false,
+        "resolution": "720p",
+        "aspect_ratio": "auto",
+        "duration": 5
+      },
+      "max_duration": 5,
+      "candidates": 2
+    },
+    "broll": {
+      "model": "wan/3-0-video",
+      "defaults": {
+        "audio": false,
+        "resolution": "720P",
+        "duration": 5,
+        "aspect_ratio": "9:16"
+      },
+      "candidates": 1
+    },
+    "upscale_image": {
+      "model": "topaz/image-upscale",
+      "defaults": {
+        "upscale_factor": "2"
+      }
+    },
+    "upscale_video": {
+      "model": "topaz/video-upscale",
+      "defaults": {
+        "upscale_factor": "2"
+      }
+    }
+  },
+  "strategy_routes": {
+    "real_photo": [],
+    "existing_footage": [],
+    "needs_shoot": [],
+    "real_photo_motion": [],
+    "ai_plate_composite": [
+      "cutout",
+      "plate_still"
+    ],
+    "ai_plate_harmonize": [
+      "cutout",
+      "plate_still",
+      "harmonize"
+    ],
+    "ai_image_edit": [
+      "image_edit"
+    ],
+    "ai_image_compose": [
+      "image_compose"
+    ],
+    "ai_i2v": [
+      "cutout",
+      "plate_still",
+      "i2v"
+    ],
+    "ai_r2v": [
+      "r2v"
+    ],
+    "ai_t2i": [
+      "plate_still"
+    ],
+    "ai_t2v": [
+      "broll"
+    ],
+    "graphic": []
+  },
+  "draft": {
+    "plate_still": {
+      "defaults": {
+        "resolution": "1K"
+      },
+      "candidates": 1
+    },
+    "image_edit": {
+      "model": "nano-banana-2-1",
+      "ref_field": "image_input",
+      "defaults": {
+        "resolution": "1K",
+        "output_format": "jpg"
+      },
+      "candidates": 1
+    },
+    "image_compose": {
+      "model": "nano-banana-2-1",
+      "ref_field": "image_input",
+      "defaults": {
+        "resolution": "1K",
+        "output_format": "jpg"
+      },
+      "candidates": 1
+    },
+    "i2v": {
+      "model": "bytedance/seedance-2-mini",
+      "ref_field": "first_frame_url",
+      "defaults": {
+        "resolution": "480p",
+        "generate_audio": false,
+        "aspect_ratio": "9:16",
+        "duration": 5
+      },
+      "candidates": 1
+    },
+    "r2v": {
+      "model": "bytedance/seedance-2-mini",
+      "ref_field": "first_frame_url",
+      "defaults": {
+        "resolution": "480p",
+        "generate_audio": false,
+        "aspect_ratio": "9:16",
+        "duration": 5
+      },
+      "candidates": 1
+    },
+    "harmonize": {
+      "model": "nano-banana-2-1",
+      "defaults": {
+        "resolution": "1K",
+        "output_format": "png"
+      }
+    }
+  }
+}

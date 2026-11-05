@@ -1,0 +1,102 @@
+{
+  "id": "colour-picker-static",
+  "name": "Same scene, every colour (static grid)",
+  "summary": "One static grid: every colourway in the identical cosy scene, colour names as pills, price tag. The image works as a colour picker.",
+  "why_it_wins": "The 6-card sofa carousel (752488534450702) and the per-colour card template (1194670162386450) keep the scene fixed so only the colour changes; feasibility 5/5 from real photos.",
+  "refs": [
+    {
+      "kind": "adlib",
+      "id": "752488534450702",
+      "take": [
+        "fixed scene per colour"
+      ],
+      "note": null
+    },
+    {
+      "kind": "adlib",
+      "id": "1194670162386450",
+      "take": [
+        "repeating template",
+        "price on every card"
+      ],
+      "note": null
+    }
+  ],
+  "format": "image",
+  "aspects": [
+    "4:5",
+    "9:16"
+  ],
+  "duration_s": null,
+  "archetype": "colour_range",
+  "hook_type": "colour_pop",
+  "angle": "versatility",
+  "awareness": "solution_aware",
+  "beats": [
+    {
+      "id": "s1",
+      "role": "reveal",
+      "dur": null,
+      "shot": "colour_lineup",
+      "strategy": "ai_image_compose",
+      "ref_roles": [
+        "family"
+      ],
+      "scene": "Cream boucle sofa with a sage-green cushion, soft window light, identical framing for each colour",
+      "composition": "2x2 grid, one colourway per cell, same angle and scale",
+      "camera": "static",
+      "overlays": [
+        {
+          "kind": "headline",
+          "slot": "hook_text",
+          "position": "top"
+        },
+        {
+          "kind": "pill_labels",
+          "slot": "colours",
+          "position": "center"
+        },
+        {
+          "kind": "price_tag",
+          "slot": "price",
+          "position": "lower_third"
+        }
+      ]
+    }
+  ],
+  "rail": {
+    "enabled": false
+  },
+  "end_card": {
+    "enabled": false
+  },
+  "copy": {
+    "framework": "minimal",
+    "hook_patterns": [
+      "{name} — {colours}",
+      "اختاري لونك"
+    ],
+    "primary_structure": "Colour list, price, COD, delivery.",
+    "tone": "light, one language"
+  },
+  "audio": {
+    "music": "none"
+  },
+  "fit": {
+    "categories": [
+      "packs",
+      "sacs"
+    ],
+    "requires": [
+      "multi_colour"
+    ]
+  },
+  "dos": [
+    "Same scale per colour cell"
+  ],
+  "donts": [
+    "No props wrong for the audience (bottles, wine glasses)"
+  ],
+  "status": "draft",
+  "created_from": "2026-11-04 DNA library (25 refs)"
+}

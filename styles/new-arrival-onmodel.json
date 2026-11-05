@@ -1,0 +1,95 @@
+{
+  "id": "new-arrival-onmodel",
+  "name": "New arrival on model (static)",
+  "summary": "The store's real on-model photo kept whole (blurred side fill in 4:5), «جديد» sticker, short headline, price + COD rail at the bottom. Zero generated pixels.",
+  "why_it_wins": "921857247156649 (on_model_lifestyle, new_arrival, feasibility 4/5): a styled outfit photo + 'new' label sells the trend angle and shows scale on the body.",
+  "refs": [
+    {
+      "kind": "adlib",
+      "id": "921857247156649",
+      "take": [
+        "new badge",
+        "on-model framing"
+      ],
+      "note": null
+    }
+  ],
+  "format": "image",
+  "aspects": [
+    "4:5",
+    "9:16"
+  ],
+  "duration_s": null,
+  "archetype": "on_model_lifestyle",
+  "hook_type": "new_arrival",
+  "angle": "style_trend",
+  "awareness": "unaware",
+  "beats": [
+    {
+      "id": "s1",
+      "role": "hook",
+      "dur": null,
+      "shot": "on_model",
+      "strategy": "real_photo",
+      "ref_roles": [
+        "on_model"
+      ],
+      "camera": "static",
+      "talent": "model_face",
+      "overlays": [
+        {
+          "kind": "badge_sticker",
+          "slot": "new_badge",
+          "position": "top"
+        },
+        {
+          "kind": "headline",
+          "slot": "hook_text",
+          "position": "upper_third"
+        }
+      ]
+    }
+  ],
+  "rail": {
+    "enabled": true,
+    "slots": [
+      "price",
+      "strike",
+      "cod_delivery"
+    ],
+    "from_frame0": true
+  },
+  "end_card": {
+    "enabled": false
+  },
+  "copy": {
+    "framework": "minimal",
+    "hook_patterns": [
+      "{name} الجديد وصل",
+      "جديد: {name}"
+    ],
+    "primary_structure": "New + name, the look, price, COD.",
+    "tone": "trendy"
+  },
+  "audio": {
+    "music": "none"
+  },
+  "fit": {
+    "categories": [
+      "packs",
+      "sacs"
+    ],
+    "requires": [
+      "on_model_photo"
+    ],
+    "notes": "Needs a real, consented on-model photo in the refs."
+  },
+  "dos": [
+    "Never cover the face with text"
+  ],
+  "donts": [
+    "No AI-generated people"
+  ],
+  "status": "draft",
+  "created_from": "2026-11-04 DNA library (25 refs)"
+}

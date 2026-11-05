@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Creative DNA — structured analysis of one reference ad (spy library ad or our own creative)",
+  "type": "object",
+  "required": ["ref", "format", "aspect", "language", "archetype", "angle", "awareness", "hook", "beats", "offer", "text_overlay", "production", "cta", "copy", "replication", "confidence"],
+  "additionalProperties": false,
+  "properties": {
+    "ref": {
+      "type": "object",
+      "required": ["kind", "id"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "enum": ["adlib", "own", "manual"] },
+        "id": { "type": "string", "minLength": 1 },
+        "page_name": { "type": ["string", "null"] },
+        "url": { "type": ["string", "null"] }
+      }
+    },
+    "format": { "type": "string", "x-enumRef": "formats" },
+    "aspect": { "type": "string", "x-enumRef": "aspects" },
+    "duration_s": { "type": ["number", "null"], "minimum": 0, "maximum": 600 },
+    "language": { "type": "string", "x-enumRef": "languages" },
+    "archetype": { "type": "string", "x-enumRef": "archetypes" },
+    "secondary_archetypes": { "type": "array", "items": { "type": "string", "x-enumRef": "archetypes" }, "maxItems": 3 },
+    "angle": { "type": "string", "x-enumRef": "angles" },
+    "secondary_angles": { "type": "array", "items": { "type": "string", "x-enumRef": "angles" }, "maxItems": 3 },
+    "awareness": { "type": "string", "x-enumRef": "awareness" },
+    "persona": { "type": ["string", "null"], "maxLength": 240 },
+    "hook": {
+      "type": "object",
+      "required": ["type", "first_frame", "seconds", "why"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "x-enumRef": "hook_types" },
+        "first_frame": { "type": "string", "minLength": 8, "maxLength": 400, "description": "What frame 0 shows: subject, framing, any text, colours." },
+        "text": { "type": ["string", "null"], "maxLength": 200, "description": "On-screen hook text verbatim (original language)." },
+        "spoken": { "type": ["string", "null"], "maxLength": 300 },
+        "seconds": { "type": "number", "minimum": 0, "maximum": 10, "description": "How long the hook lasts before the body starts." },
+        "why": { "type": "string", "minLength": 8, "maxLength": 400, "description": "Mechanism: why this stops the scroll for THIS audience." }
+      }
+    },
+    "beats": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "description": "Timeline (video) or panels (carousel) or zones (image).",
+      "items": {
+        "type": "object",
+        "required": ["role", "t0", "t1", "shot", "visual"],
+        "additionalProperties": false,
+        "properties": {
+          "role": { "type": "string", "x-enumRef": "beat_roles" },
+          "t0": { "type": "number", "minimum": 0 },
+          "t1": { "type": "number", "minimum": 0 },
+          "shot": { "type": "string", "x-enumRef": "shot_types" },
+          "visual": { "type": "string", "minLength": 4, "maxLength": 400 },
+          "camera": { "type": "string", "x-enumRef": "camera_moves" },
+          "transition_in": { "type": "string", "x-enumRef": "transitions" },
+          "text_overlay": { "type": ["string", "null"], "maxLength": 200 },
+          "overlay_style": { "type": "string", "x-enumRef": "overlay_styles" },
+          "audio": { "type": ["string", "null"], "maxLength": 200 }
+        }
+      }
+    },
+    "offer": {
+      "type": "object",
+      "required": ["price_shown", "strike_price", "bundle", "gift", "cod", "free_delivery"],
+      "additionalProperties": false,
+      "properties": {
+        "price_shown": { "type": "boolean" },
+        "price_text": { "type": ["string", "null"], "maxLength": 80 },
+        "strike_price": { "type": "boolean" },
+        "bundle": { "type": "boolean" },
+        "bundle_desc": { "type": ["string", "null"], "maxLength": 160 },
+        "gift": { "type": "boolean" },
+        "cod": { "type": "boolean" },
+        "free_delivery": { "type": "boolean" },
+        "delivery_scope": { "type": ["string", "null"], "maxLength": 60 },
+        "urgency": { "type": ["string", "null"], "maxLength": 120 },
+        "first_seen_s": { "type": ["number", "null"], "minimum": 0, "description": "When the price/offer first appears on screen." }
+      }
+    },
+    "text_overlay": {
+      "type": "object",
+      "required": ["density", "language", "positions"],
+      "additionalProperties": false,
+      "properties": {
+        "density": { "type": "string", "x-enumRef": "text_density" },
+        "language": { "type": "string", "x-enumRef": "languages" },
+        "positions": { "type": "array", "items": { "enum": ["top", "upper_third", "center", "lower_third", "bottom", "full"] }, "uniqueItems": true },
+        "styles": { "type": "array", "items": { "type": "string", "x-enumRef": "overlay_styles" }, "uniqueItems": true },
+        "font_feel": { "type": ["string", "null"], "maxLength": 120 },
+        "persistent_rail": { "type": "boolean", "description": "A price/COD rail stays on screen the whole time." }
+      }
+    },
+    "production": {
+      "type": "object",
+      "required": ["style", "talent", "pace"],
+      "additionalProperties": false,
+      "properties": {
+        "style": { "type": "string", "x-enumRef": "production_styles" },
+        "talent": { "type": "string", "x-enumRef": "talent" },
+        "setting": { "type": ["string", "null"], "maxLength": 200 },
+        "lighting": { "type": ["string", "null"], "maxLength": 160 },
+        "palette": { "type": "array", "items": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }, "maxItems": 6 },
+        "pace": { "type": "string", "x-enumRef": "pace" },
+        "cuts_per_10s": { "type": ["number", "null"], "minimum": 0, "maximum": 60 },
+        "transitions": { "type": "array", "items": { "type": "string", "x-enumRef": "transitions" }, "uniqueItems": true },
+        "music": { "type": "string", "x-enumRef": "music" },
+        "voiceover": { "type": "string", "x-enumRef": "voiceover" },
+        "sfx": { "type": "boolean" },
+        "ai_generated_signs": { "type": ["string", "null"], "maxLength": 200 }
+      }
+    },
+    "cta": {
+      "type": "object",
+      "required": ["button"],
+      "additionalProperties": false,
+      "properties": {
+        "button": { "type": "string", "x-enumRef": "cta_types" },
+        "on_screen": { "type": ["string", "null"], "maxLength": 120 },
+        "in_copy": { "type": ["string", "null"], "maxLength": 200 },
+        "destination": { "enum": ["website", "messenger", "whatsapp", "instagram", "form", "unknown"] }
+      }
+    },
+    "copy": {
+      "type": "object",
+      "required": ["framework", "length", "language"],
+      "additionalProperties": false,
+      "properties": {
+        "framework": { "type": "string", "x-enumRef": "copy_frameworks" },
+        "length": { "enum": ["short", "medium", "long"] },
+        "language": { "type": "string", "x-enumRef": "languages" },
+        "structure": { "type": ["string", "null"], "maxLength": 300, "description": "e.g. emoji headline → 3 ✔ benefits → price → delivery → CTA" },
+        "emoji_density": { "enum": ["none", "low", "medium", "high"] },
+        "key_phrases": { "type": "array", "items": { "type": "string", "maxLength": 80 }, "maxItems": 8 }
+      }
+    },
+    "replication": {
+      "type": "object",
+      "required": ["feasibility", "needs", "risks", "what_to_copy", "what_to_avoid"],
+      "additionalProperties": false,
+      "properties": {
+        "feasibility": { "type": "integer", "minimum": 0, "maximum": 5, "description": "5 = fully reproducible with our photos + AI + editor." },
+        "needs": { "type": "array", "items": { "type": "string", "maxLength": 120 }, "maxItems": 8 },
+        "risks": { "type": "array", "items": { "type": "string", "maxLength": 160 }, "maxItems": 8 },
+        "what_to_copy": { "type": "array", "items": { "type": "string", "maxLength": 200 }, "minItems": 1, "maxItems": 8 },
+        "what_to_avoid": { "type": "array", "items": { "type": "string", "maxLength": 200 }, "maxItems": 8 },
+        "ip_flags": { "type": "array", "items": { "type": "string", "maxLength": 120 }, "maxItems": 4, "description": "Replica/luxury marks, copyrighted music, other brands' assets — never replicate these." }
+      }
+    },
+    "winning_signals": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "days_active": { "type": ["number", "null"] },
+        "collation_count": { "type": ["integer", "null"] },
+        "score": { "type": ["number", "null"] },
+        "tier": { "type": ["string", "null"] }
+      }
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "Analyst confidence in this read (low when only a thumbnail was available)." },
+    "notes": { "type": ["string", "null"], "maxLength": 1200 }
+  }
+}

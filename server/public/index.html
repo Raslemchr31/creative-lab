@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>creative-lab · SIRINE</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23f2efe8'/%3E%3Ctext x='16' y='21.5' font-family='Segoe UI,Arial,sans-serif' font-size='14' font-weight='700' text-anchor='middle' fill='%230b0b0d'%3ECL%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#app">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="#/" aria-label="creative-lab home">
+      <span class="brand-mark" aria-hidden="true">CL</span>
+      <span class="brand-name">creative-lab</span>
+      <span class="brand-client">SIRINE</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#/" data-nav="winners">Library <span class="nav-count" data-count="winners"></span></a>
+      <a href="#/styles" data-nav="styles">Styles <span class="nav-count" data-count="styles"></span></a>
+      <a href="#/products" data-nav="products">Products <span class="nav-count" data-count="products"></span></a>
+      <a href="#/batches" data-nav="batches">Batches <span class="nav-count" data-count="batches"></span></a>
+      <a href="#/briefs" data-nav="briefs">Prompt codes <span class="nav-count" data-count="briefs"></span></a>
+    </nav>
+    <div class="topbar-right">
+      <span class="libstats" id="libstats" aria-live="polite"></span>
+      <a class="btn btn-primary btn-sm" href="#/batch/new" data-nav="new">New batch</a>
+    </div>
+  </header>
+  <main id="app" class="app" tabindex="-1"></main>
+  <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+  <div id="lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-label="Image preview">
+    <button class="lightbox-close btn btn-ghost" type="button" aria-label="Close preview">Close</button>
+    <figure class="lightbox-figure"><img alt=""><figcaption></figcaption></figure>
+  </div>
+</body>
+</html>

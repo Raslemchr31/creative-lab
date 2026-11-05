@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "id": "sample/coverage-fr",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "durationInFrames": 270,
+  "lang": "fr",
+  "dir": "ltr",
+  "safe": { "top": 270, "bottom": 1250, "side": 65 },
+  "segments": [
+    {
+      "id": "c1",
+      "from": 0,
+      "frames": 45,
+      "layers": [{ "kind": "fill", "color": "#101012" }],
+      "texts": [
+        { "slot": "kicker", "text": "Pack HOBO", "style": "kicker", "position": "center", "at": 0 },
+        { "slot": "big", "text": "NOUVEAU", "style": "big", "position": "center", "at": 0, "emphasis": "big" }
+      ]
+    },
+    {
+      "id": "c2",
+      "from": 45,
+      "frames": 45,
+      "transitionIn": { "kind": "fade", "frames": 10 },
+      "layers": [{ "kind": "image", "src": "lab/sample/hobo-model.jpg", "fit": "cover", "motion": { "type": "pan_left", "amount": 0.08 } }],
+      "texts": [
+        { "slot": "hook_text", "text": "Le sac croco et ses baskets assorties, livrés dans les 69 wilayas d'Algérie", "style": "headline", "position": "top", "at": 0.2 },
+        { "slot": "benefit", "text": "Paiement à la livraison", "style": "pill", "position": "lower_third", "at": 0.4, "emphasis": "highlight" }
+      ]
+    },
+    {
+      "id": "c3",
+      "from": 90,
+      "frames": 45,
+      "transitionIn": { "kind": "slide", "frames": 12, "dir": "U" },
+      "layers": [{ "kind": "image", "src": "lab/sample/djine-pack.jpg", "fit": "contain", "bg": "#F4F1EA", "motion": { "type": "pull_out", "amount": 0.06 } }],
+      "texts": [
+        { "slot": "badge", "text": "Nouveau modèle", "style": "badge", "position": "upper_third", "at": 0.2, "emphasis": "highlight" },
+        { "slot": "inspect", "text": "Vérifiez votre colis devant le livreur avant de payer", "style": "subtitle", "position": "lower_third", "at": 0.3, "emphasis": "highlight" }
+      ]
+    },
+    {
+      "id": "c4",
+      "from": 135,
+      "frames": 45,
+      "transitionIn": { "kind": "zoom", "frames": 10 },
+      "layers": [
+        { "kind": "fill", "color": "#0A0A0A" },
+        { "kind": "cutout", "src": "lab/sample/hobo-pack-cutout.png", "box": { "x": 0.25, "y": 0.15, "w": 0.5, "h": 0.25 }, "shadow": true, "motion": { "type": "pan_right", "amount": 0.04 } }
+      ],
+      "texts": [
+        { "slot": "proof", "text": "Dans le pack", "style": "checklist", "position": "lower_third", "at": 0.2, "items": ["Sac HOBO effet croco", "Baskets assorties", "Paiement à la livraison"] }
+      ]
+    },
+    {
+      "id": "c5",
+      "from": 180,
+      "frames": 45,
+      "transitionIn": { "kind": "push", "frames": 10, "dir": "U" },
+      "layers": [{ "kind": "video", "src": "lab/sample/hobo-model-clip.mp4", "trimStart": 3.2, "fit": "cover" }],
+      "texts": [
+        { "slot": "price", "text": "4 200 DA", "style": "price_tag", "position": "center", "at": 0.2, "emphasis": "big" },
+        { "slot": "caption", "text": "Seulement cette semaine", "style": "subtitle", "position": "lower_third", "at": 0.5, "until": 1.2 }
+      ]
+    }
+  ],
+  "rail": {
+    "enabled": true,
+    "fromFrame": 15,
+    "y": 1157,
+    "h": 86,
+    "items": [
+      { "slot": "price", "text": "4 200 DA" },
+      { "slot": "strike", "text": "5 800 DA" },
+      { "slot": "cod_delivery", "text": "Paiement à la livraison · 69 wilayas" }
+    ]
+  },
+  "endCard": {
+    "enabled": true,
+    "from": 225,
+    "frames": 45,
+    "lines": [
+      { "slot": "name", "text": "Pack HOBO" },
+      { "slot": "price", "text": "4 200 DA" },
+      { "slot": "strike", "text": "5 800 DA" },
+      { "slot": "cod_delivery", "text": "Paiement à la livraison · 69 wilayas" },
+      { "slot": "cta", "text": "Commandez maintenant" },
+      { "slot": "site", "text": "sirinealgeria.store" },
+      { "slot": "phone", "text": "0560299703" }
+    ]
+  },
+  "audio": null
+}

@@ -1,0 +1,24 @@
+{
+  "id": "t-video-offer",
+  "name": "TEST offer-stack video",
+  "status": "draft",
+  "summary": "Test fixture: composite hook with price rail from frame 0, AI camera move on the real product, real on-model photo, end card.",
+  "refs": [],
+  "format": "video",
+  "aspects": ["9:16", "4:5"],
+  "duration_s": 12,
+  "archetype": "offer_stack",
+  "hook_type": "price_shock",
+  "angle": "bundle_value",
+  "awareness": "product_aware",
+  "beats": [
+    { "id": "b1", "role": "hook", "dur": 2.5, "shot": "product_hero", "strategy": "ai_plate_composite", "ref_roles": ["hero"], "scene": "Minimal warm studio with a seamless cream wall", "camera": "push_in", "overlays": [{ "kind": "headline", "slot": "hook_text", "position": "upper_third" }] },
+    { "id": "b2", "role": "reveal", "dur": 4, "shot": "product_angle", "strategy": "ai_i2v", "from_beat": "b1", "camera": "orbit", "motion": "Soft light glides across the material", "transition_in": "dissolve", "overlays": [{ "kind": "checklist", "slot": "benefit_1", "position": "upper_third" }] },
+    { "id": "b3", "role": "proof", "dur": 3, "shot": "on_model", "strategy": "real_photo_motion", "ref_roles": ["on_model"], "camera": "push_in", "transition_in": "push", "overlays": [{ "kind": "badge_sticker", "slot": "cod", "position": "top" }] }
+  ],
+  "rail": { "enabled": true, "slots": ["price", "strike", "cod_delivery"], "from_frame0": true },
+  "end_card": { "enabled": true, "dur": 2, "slots": ["name", "price", "strike", "cta", "site"] },
+  "copy": { "framework": "offer_first", "hook_patterns": ["{name} بـ {price} فقط", "جديد: {name}"] },
+  "audio": { "music": "none", "voiceover": "none" },
+  "fit": { "categories": ["packs", "sacs"], "requires": [] }
+}

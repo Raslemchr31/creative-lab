@@ -1,0 +1,40 @@
+{
+  "family": "sac-vernis",
+  "display_name": {
+    "ar": "حقيبة فيرني",
+    "fr": "Sac Vernis"
+  },
+  "pieces": [
+    {
+      "id": "bag",
+      "en": "glossy patent structured tote with a beige ornamented ribbon stripe",
+      "ar": "حقيبة",
+      "fr": "sac",
+      "hardware": "gold rings, small patent pouch on a gold clip"
+    }
+  ],
+  "colourways": {
+    "sac-vernis-bordeaux": {
+      "name_en": "burgundy",
+      "hex": "#4F1119",
+      "in_stock": true
+    },
+    "sac-vernis-noir": {
+      "name_en": "black",
+      "hex": "#1A1A1A",
+      "in_stock": true
+    },
+    "sac-vernis-rose": {
+      "name_en": "blush pink",
+      "hex": "#E5C1BA",
+      "in_stock": true
+    },
+    "sac-vernis-rouge": {
+      "name_en": "red",
+      "hex": "#A82230",
+      "in_stock": true
+    }
+  },
+  "written_by": "claude from store photos 2026-11-01",
+  "confirmed_by_owner": false
+}

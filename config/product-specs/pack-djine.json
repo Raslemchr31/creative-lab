@@ -1,0 +1,70 @@
+{
+  "family": "pack-djine",
+  "display_name": {
+    "ar": "طقم جينز",
+    "fr": "Pack Djine"
+  },
+  "pieces": [
+    {
+      "id": "bag",
+      "en": "denim-look canvas tote with tan leather handles and a beige woven ribbon stripe",
+      "ar": "ساك",
+      "fr": "cabas",
+      "hardware": "round tan leather logo patch, small detachable pouch on a gold clip"
+    },
+    {
+      "id": "sneakers",
+      "en": "lace-up denim-look sneakers",
+      "ar": "سبادري",
+      "fr": "baskets",
+      "hardware": "tonal laces"
+    }
+  ],
+  "benefits": {
+    "ar": [
+      "ساك جينز بأيادي جلد",
+      "سبادري جينز بنفس اللون",
+      "بوشة صغيرة مع الساك"
+    ],
+    "fr": [
+      "Cabas effet jean",
+      "Baskets assorties",
+      "Pochette incluse"
+    ]
+  },
+  "notes": "Grenat is out of stock.",
+  "colourways": {
+    "pack-djine-beige": {
+      "name_en": "beige",
+      "hex": "#9E8675",
+      "in_stock": true
+    },
+    "pack-djine-bleu": {
+      "name_en": "denim blue",
+      "hex": "#2E4362",
+      "in_stock": true
+    },
+    "pack-djine-grenad": {
+      "name_en": "garnet red",
+      "hex": "#661E2E",
+      "in_stock": false
+    },
+    "pack-djine-marron": {
+      "name_en": "brown",
+      "hex": "#503A2A",
+      "in_stock": true
+    },
+    "pack-djine-noire": {
+      "name_en": "black",
+      "hex": "#1A1A1A",
+      "in_stock": true
+    },
+    "pack-djine-rose": {
+      "name_en": "blush pink",
+      "hex": "#E3B7B2",
+      "in_stock": true
+    }
+  },
+  "written_by": "claude from store photos 2026-11-01",
+  "confirmed_by_owner": false
+}

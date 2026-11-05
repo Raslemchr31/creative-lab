@@ -17,6 +17,8 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { execFile } from "node:child_process";
+import { randomBytes } from "node:crypto";
 
 // ── spend lock — installed before any lib module is imported ─────────────────────
 const KIE_HOST_RE = /(^|\.)(kie\.ai|redpandaai\.co)$/i;
@@ -335,6 +337,7 @@ function serveStatic(req, res, rawPath) {
 const MODULES = {
   styles: { file: path.join(LAB_ROOT, "lib", "styles.mjs"), needs: ["listStyles", "getStyle"] },
   batch: { file: path.join(LAB_ROOT, "lib", "batch.mjs"), needs: ["listBatches", "getBatch", "createBatch", "runPreflight"] },
+  colour: { file: path.join(LAB_ROOT, "lib", "products", "colour.mjs"), needs: ["colourways"] },
 };
 const modCache = {};
 
@@ -344,7 +347,7 @@ async function loadModule(name) {
   try {
     st = fs.statSync(spec.file);
   } catch {
-    throw new Error(`lib/${name}.mjs does not exist yet`);
+    throw new Error(`${path.relative(LAB_ROOT, spec.file).split(path.sep).join("/")} does not exist yet`);
   }
   const key = `${st.mtimeMs}-${st.size}`;
   const c = (modCache[name] ||= { tries: 0 });
@@ -1016,19 +1019,431 @@ function apiBatchPreflight({ params: [id] }) {
 
 // ── briefs (reference + product + format → code for Claude) ─────────────────────
 const briefsMod = await import("../lib/briefs.mjs");
-function briefOut(b) {
+const thumbOf = (p) => (p ? fileUrl(p.replace(/\.(png|jpe?g|webp)$/i, ".thumb.jpg")) : null);
+function briefOut(b, full = false) {
   if (!b) return null;
   const p = getProduct(b.product_slug);
   const ref = b.source_kind === "ad" ? adSummaries([b.source_id]).get(b.source_id) || null : null;
-  return { ...b, product: p ? { slug: p.slug, name: p.name, price: p.price, thumb: fileUrl(p.refs?.[0]?.path?.replace(/\.(png|jpe?g|webp)$/i, ".thumb.jpg")) || fileUrl(p.refs?.[0]?.path), photos: (p.refs || []).filter((r) => r.approved !== false).map((r) => ({ url: r.url, role: r.role, file: fileUrl(r.path) })) } : null, reference: ref };
+  const out = {
+    ...b,
+    product: p
+      ? {
+          slug: p.slug,
+          name: p.name,
+          price: p.price,
+          compareAt: p.compareAt ?? null,
+          inStock: !!p.inStock,
+          thumb: thumbOf(p.refs?.[0]?.path) || fileUrl(p.refs?.[0]?.path),
+          photos: (p.refs || []).map((r, idx) => ({ idx, url: r.url, role: r.role, approved: r.approved !== false, file: fileUrl(r.path), thumb: thumbOf(r.path) })).filter((r) => r.approved),
+        }
+      : null,
+    reference: ref,
+  };
+  if (full) {
+    try {
+      out.pack = parsePack(b.prompt, p);
+    } catch (e) {
+      console.error(`✗ could not parse the prompt of ${b.code}:`, e?.stack || e);
+      out.pack = null; // the UI falls back to the raw markdown
+    }
+  }
+  return out;
 }
 function apiBriefs() {
-  return briefsMod.listBriefs(200).map(briefOut);
+  return briefsMod.listBriefs(200).map((b) => briefOut(b));
 }
 function apiBrief({ params: [code] }) {
   const b = briefsMod.getBrief(code);
   if (!b) throw new HttpError(404, "code not found");
-  return briefOut(b);
+  return briefOut(b, true);
+}
+
+// ── production-pack parser (PROMPT.md → scenes / photos / sections) ──────────────
+// Format (skills/flow-prompt): "## Scene N — title (ref S1 · 0–2.1 s → use 2.0 s)", a settings line
+// ("Model **Veo 3.1 Fast** · **Ingredients** · 9:16 · 8 s · 4 outputs · Attach: **5, 6, 2**" or
+// "· **Start frame:** photo 2 …"), the prompt on "> " line(s), then "Use: …" / "**If it drifts:** …".
+// Older packs use "## Clip A — …" with "Mode **…** · Aspect **…**" and a separate "**Attach:**" line.
+// Everything here is best-effort: unknown shapes degrade to nulls, never to an exception the UI sees.
+const unbold = (s) => String(s || "").replace(/\*\*/g, "").replace(/`/g, "").trim();
+const SECTION_KEYS = [
+  [/^breakdown/i, "breakdown"],
+  [/^product\s+lock/i, "product_lock"],
+  [/^continuity/i, "continuity"],
+  [/^voice/i, "voice_over"],
+  [/^(assembly|edit\b)/i, "assembly"],
+  [/^qa\b/i, "qa"],
+];
+const SCENE_HEAD_RE = /^(?:Scene|Clip|Shot)\s+([0-9]+[a-z]?|[A-Z])\b\s*(?:[—–:-]\s*)?(.*)$/i;
+
+function parseAttachText(text, photos) {
+  const attach = [];
+  // "1) the store photo above" — strip list enumerators; split on commas / " + " / " and ".
+  for (let tok of String(text).split(/\s*,\s*|\s+\+\s+|\s+and\s+/i)) {
+    tok = unbold(tok).replace(/^\d+\)\s*/, "").replace(/[.;]+$/, "").trim();
+    if (!tok) continue;
+    let m;
+    if ((m = /^@([\p{L}\p{N}_-]+)/u.exec(tok))) attach.push({ kind: "character", name: m[1] });
+    else if ((m = /^(\d{1,2})(?:-([\w-]+))?(?:\.(?:jpe?g|png|webp))?$/i.exec(tok))) attach.push({ kind: "photo", n: Number(m[1]), hint: m[2] || null });
+    else if ((m = /\bphoto\s+(\d{1,2})\b/i.exec(tok))) attach.push({ kind: "photo", n: Number(m[1]), hint: null });
+    else if (/store photo/i.test(tok) && photos.length === 1) attach.push({ kind: "photo", n: photos[0].n, hint: null });
+    else attach.push({ kind: "text", label: tok });
+  }
+  return attach;
+}
+
+function parseSettings(pre, photos) {
+  const s = { model: null, mode: null, aspect: null, length: null, outputs: null };
+  let attach = [];
+  let startFrame = null;
+  let startText = null;
+  const notes = [];
+  for (const raw of pre) {
+    const line = unbold(raw).replace(/^Flow settings:\s*/i, "");
+    if (!line || /^PROMPT\b/i.test(line)) continue;
+    let used = false;
+    let m;
+    if ((m = /\bModel:?\s+((?:Veo|Gemini|Omni|Nano)[^·\n]*?)(?=\s*·|\s*$)/i.exec(line))) {
+      s.model = m[1].trim();
+      used = true;
+    }
+    if (/^Flow:\s*Image\b/i.test(line)) {
+      s.model ||= "Flow image";
+      s.mode ||= "Image";
+      used = true;
+      const arrow = /\d\s*outputs?\s*→\s*(.+)$/i.exec(line); // "4 outputs → pick one → Add to Characters as …"
+      if (arrow && !/Attach/i.test(arrow[1])) notes.push(arrow[1].trim());
+    }
+    if ((m = /\bMode:?\s+([A-Za-z][A-Za-z ]*?)(?=\s*[·(]|\s*$)/.exec(line))) s.mode = m[1].trim();
+    if (!s.mode) {
+      for (const seg of line.split("·").map((x) => x.trim())) {
+        if (/^(Ingredients|Frames|Text|Image)(\s+to\s+video)?$/i.test(seg)) s.mode = seg;
+      }
+    }
+    if ((m = /\b(9:16|16:9|1:1|4:5)\b/.exec(line))) {
+      s.aspect ||= m[1];
+      used = true;
+    }
+    if ((m = /\bLength:?\s+(\d{1,2})\s*s\b/i.exec(line)) || (m = line.split("·").map((x) => x.trim()).map((x) => /^(\d{1,2})\s*s$/.exec(x)).find(Boolean))) s.length ||= `${m[1]} s`;
+    if ((m = /\b(\d{1,2})\s+outputs?\b/i.exec(line)) || (m = /\bOutputs:?\s+(\d{1,2})\b/i.exec(line))) s.outputs ||= Number(m[1]);
+    // Start frame ("**Start frame:** photo 2 cropped to 9:16" / "Attach as START frame: the store photo, …")
+    if ((m = /(?:Attach as\s+)?Start frame:?\s*(.+)$/i.exec(line))) {
+      startText = m[1].trim();
+      const pm = /\bphoto\s+(\d{1,2})\b/i.exec(startText) || (/store photo/i.test(startText) && photos.length === 1 ? [null, photos[0].n] : null);
+      if (pm) startFrame = Number(pm[1]);
+      used = true;
+    } else if ((m = /\bAttach(?:,\s*in this order)?:?\s*(.+)$/i.exec(line))) {
+      // "Attach: 2, 3, 5. Only needed if …" → the list stops at the first sentence break.
+      const rest = m[1];
+      const cut = /\.\s+(?=[A-Z])/.exec(rest);
+      attach = attach.concat(parseAttachText(cut ? rest.slice(0, cut.index) : rest, photos));
+      if (cut) notes.push(rest.slice(cut.index + 1).trim());
+      used = true;
+    }
+    if (!used && !s.mode && !s.model) notes.push(line);
+    else if (!used && !/\bMode\b/.test(line)) notes.push(line);
+  }
+  return { settings: s, attach, startFrame, startText, notes: notes.filter(Boolean) };
+}
+
+function parseScene(id, rest, body, photos) {
+  let title = rest.trim();
+  let meta = null;
+  const pm = /\s*\(([^()]*)\)\s*$/.exec(title);
+  if (pm) {
+    meta = pm[1].trim();
+    title = title.slice(0, pm.index).trim();
+  }
+  const refShot = meta && /\bref\s+(S\d+)/i.exec(meta);
+  const refTime = meta && /(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*s/.exec(meta);
+  const useM = meta && /\buse\s+~?(\d+(?:\.\d+)?)\s*s/i.exec(meta);
+  const qi = body.findIndex((l) => /^>\s?/.test(l));
+  const pre = (qi === -1 ? body : body.slice(0, qi)).filter((l) => l.trim() && l.trim() !== "---");
+  let promptLines = [];
+  let after = [];
+  if (qi !== -1) {
+    let k = qi;
+    while (k < body.length && /^>\s?/.test(body[k])) promptLines.push(body[k++].replace(/^>\s?/, ""));
+    after = body.slice(k).filter((l) => l.trim() && l.trim() !== "---");
+  }
+  const st = parseSettings(pre, photos);
+  let useNote = null;
+  let fallback = null;
+  const notes = [...st.notes];
+  for (const l of after) {
+    const t = l.trim();
+    const ifAt = t.search(/\*\*If\b/);
+    if (/^Use:/i.test(t)) {
+      useNote = unbold((ifAt > 0 ? t.slice(0, ifAt) : t).replace(/^Use:\s*/i, ""));
+      if (ifAt > 0) fallback = unbold(t.slice(ifAt));
+    } else if (ifAt === 0 || /^If\b/i.test(t)) fallback = fallback ? `${fallback}\n${unbold(t)}` : unbold(t);
+    else notes.push(unbold(t));
+  }
+  const attach = st.attach.slice();
+  if (st.startFrame && !attach.some((a) => a.kind === "photo" && a.n === st.startFrame)) attach.unshift({ kind: "photo", n: st.startFrame, hint: null, start: true });
+  else if (st.startFrame) {
+    const i = attach.findIndex((a) => a.kind === "photo" && a.n === st.startFrame);
+    const [a] = attach.splice(i, 1);
+    attach.unshift({ ...a, start: true });
+  }
+  const prep = /^0/.test(id) || /^Flow image$/i.test(st.settings.model || "") || /^Image$/i.test(st.settings.mode || "");
+  return {
+    n: id,
+    title: title || `Scene ${id}`,
+    meta,
+    ref_shot: refShot ? refShot[1].toUpperCase() : null,
+    ref_time: refTime ? `${refTime[1]}–${refTime[2]} s` : null,
+    use: useM ? `${useM[1]} s` : null,
+    use_s: useM ? Number(useM[1]) : null,
+    prep,
+    settings: st.settings,
+    attach,
+    start_frame: st.startFrame,
+    start_frame_text: st.startText,
+    prompt: promptLines.join("\n").trim() || null,
+    use_note: useNote,
+    fallback,
+    notes,
+  };
+}
+
+function parsePack(md, product) {
+  if (!md || typeof md !== "string") return null;
+  const lines = md.replace(/\r\n?/g, "\n").split("\n");
+  const title = /^#\s+(.+)$/.exec(lines[0] || "")?.[1]?.trim() || null;
+  // Split into "## " blocks.
+  const blocks = [];
+  let cur = { head: null, body: [] };
+  for (const l of lines.slice(title ? 1 : 0)) {
+    const m = /^##\s+(.+?)\s*$/.exec(l);
+    if (m && !/^###/.test(l)) {
+      blocks.push(cur);
+      cur = { head: m[1], body: [] };
+    } else cur.body.push(l);
+  }
+  blocks.push(cur);
+  const refs = Array.isArray(product?.refs) ? product.refs : [];
+  const byUrl = new Map(refs.map((r, i) => [String(r.url || "").trim(), i]));
+  const photoOf = (n, label, url, idx) => {
+    const r = idx !== null && idx !== undefined ? refs[idx] : null;
+    return { n, label: label || r?.role || `photo ${n}`, url: url || r?.url || null, idx: idx ?? null, role: r?.role ?? null, file: fileUrl(r?.path), thumb: thumbOf(r?.path) };
+  };
+  // Photos: the numbered list ("1. label: https://…") anywhere before the first scene.
+  const firstScene = blocks.findIndex((b) => b.head && SCENE_HEAD_RE.test(b.head));
+  const preText = blocks.slice(0, firstScene === -1 ? blocks.length : firstScene).flatMap((b) => b.body);
+  const photos = [];
+  for (const l of preText) {
+    const m = /^\s*(\d{1,2})[.)]\s+(.*?)(https?:\/\/\S+?)[)*.,]*\s*$/.exec(l);
+    if (!m) continue;
+    const url = m[3];
+    const label = unbold(m[2]).replace(/[:\-–—\s]+$/, "").trim();
+    photos.push(photoOf(Number(m[1]), label, url, byUrl.has(url) ? byUrl.get(url) : null));
+  }
+  if (!photos.length) {
+    // No numbered list: a single bare URL, or the attach tokens ("1-full-pack.jpg") index the store photos in order.
+    const urls = preText.flatMap((l) => [...l.matchAll(/https?:\/\/[^\s*)]+/g)].map((x) => x[0].replace(/[.,]+$/, ""))).filter((u) => byUrl.has(u));
+    if (urls.length) urls.forEach((u, i) => photos.push(photoOf(i + 1, null, u, byUrl.get(u))));
+    else refs.forEach((r, i) => r.approved !== false && photos.push(photoOf(i + 1, null, r.url, i)));
+  }
+  const scenes = [];
+  const sections = {};
+  const intro = [];
+  for (const b of blocks) {
+    if (!b.head) {
+      intro.push(...b.body);
+      continue;
+    }
+    const sm = SCENE_HEAD_RE.exec(b.head);
+    if (sm) {
+      scenes.push(parseScene(sm[1], sm[2] || "", b.body, photos));
+      continue;
+    }
+    const key = SECTION_KEYS.find(([re]) => re.test(b.head))?.[1];
+    const text = b.body.join("\n").replace(/\n-{3,}\s*$/g, "").trim();
+    if (key && !sections[key]) sections[key] = { title: b.head, markdown: text };
+    else (sections.other ||= []).push({ title: b.head, markdown: text });
+  }
+  sections.intro = { title: "About this pack", markdown: intro.join("\n").replace(/\n-{3,}\s*$/g, "").trim() };
+  // Name photos that only appear as attach tokens ("2-tote.jpg" → "tote").
+  for (const sc of scenes) {
+    for (const a of sc.attach) {
+      if (a.kind !== "photo") continue;
+      const ph = photos.find((p) => p.n === a.n);
+      if (ph && a.hint && (!ph.label || ph.label === ph.role || /^photo \d+$/.test(ph.label))) ph.label = a.hint.replace(/-/g, " ");
+      a.missing = !ph;
+    }
+  }
+  const vo = (sections.voice_over?.markdown || "").split("\n").map((l) => /^\s*[-*]\s+(?:\*\*)?([\d.]+\s*[–-]\s*[\d.]+\s*s)(?:\*\*)?:?\s*(.+)$/.exec(l)).filter(Boolean).map((m) => ({ time: m[1].replace(/\s+/g, " "), text: m[2].replace(/^«|»$/g, "").trim(), raw: m[2].trim() }));
+  const qa = (sections.qa?.markdown || "").split("\n").map((l) => /^\s*[-*]\s+(.+)$/.exec(l)?.[1]).filter(Boolean).map(unbold);
+  const totalM = title && /~\s*(\d+(?:\.\d+)?)\s*s\b/.exec(title);
+  const video = scenes.filter((s) => !s.prep);
+  const sumUse = video.reduce((a, s) => a + (s.use_s || 0), 0);
+  return {
+    title,
+    total_s: totalM ? Number(totalM[1]) : sumUse ? Math.round(sumUse * 10) / 10 : null,
+    photos,
+    scenes,
+    sections,
+    vo_lines: vo,
+    qa_items: qa,
+    used_photos: [...new Set(scenes.flatMap((s) => s.attach.filter((a) => a.kind === "photo" && !a.missing).map((a) => a.n)))],
+  };
+}
+
+// ── colourways (lib/products/colour.mjs, built in parallel → 503 until it lands) ─
+/** A colourway photo's `file` may be an absolute path or already a /files/ URL → absolute local path or null. */
+function localOf(f) {
+  if (!f || typeof f !== "string" || isHttp(f)) return null;
+  if (f.startsWith("/files/")) {
+    const segs = safeSegments(f.slice(7));
+    return segs ? path.resolve(DATA_ROOT, ...segs) : null;
+  }
+  return path.isAbsolute(f) ? path.resolve(f) : null;
+}
+async function loadColourways(slug) {
+  const raw = await withModule("colour", (m) => m.colourways(slug));
+  const list = Array.isArray(raw) ? raw : Array.isArray(raw?.items) ? raw.items : Array.isArray(raw?.colourways) ? raw.colourways : [];
+  return list.map((c) => ({
+    slug: c?.slug ?? null,
+    in_stock: c?.in_stock ?? c?.inStock ?? null,
+    name: c?.name && typeof c.name === "object" ? c.name : { fr: c?.name ?? null },
+    store_hex: c?.store_hex ?? null,
+    measured_hex: c?.measured_hex ?? null,
+    descriptor_en: c?.descriptor_en ?? null,
+    colour_lock: c?.colour_lock ?? null,
+    photos: (Array.isArray(c?.photos) ? c.photos : []).map((ph) => {
+      const abs = localOf(ph?.file) || localOf(ph?.path) || localOf(ph?.local_path);
+      return { url: isHttp(ph?.url) ? ph.url : null, role: ph?.role ?? null, file: fileUrl(abs), thumb: thumbOf(abs), _abs: abs };
+    }),
+  }));
+}
+const publicColourway = (c) => ({ ...c, photos: c.photos.map(({ _abs, ...ph }) => ph) });
+async function apiColourways({ params: [slug] }) {
+  if (!SLUG_RE.test(slug)) throw new HttpError(404, "product not found");
+  if (!getProduct(slug)) throw new HttpError(404, "product not found");
+  return { slug, items: (await loadColourways(slug)).map(publicColourway) };
+}
+
+// ── photo zips (system bsdtar / zip — no npm dependency) ──────────────────────────
+const STREAMED = Symbol("streamed");
+const fileSlug = (s) =>
+  String(s || "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48) || "photo";
+const execP = (cmd, args, opts) =>
+  new Promise((resolve, reject) => execFile(cmd, args, { windowsHide: true, timeout: 60000, ...opts }, (e, so, se) => (e ? reject(Object.assign(e, { stderr: String(se || "") })) : resolve(so))));
+async function makeZip(dir, names, out) {
+  if (IS_WIN) return execP(path.join(process.env.SystemRoot || "C:/Windows", "System32", "tar.exe"), ["-a", "-c", "-f", out, ...names], { cwd: dir });
+  try {
+    return await execP("zip", ["-q", "-X", out, ...names], { cwd: dir });
+  } catch (e) {
+    if (e.code !== "ENOENT") throw e;
+    for (const t of ["bsdtar", "tar"]) {
+      try {
+        return await execP(t, ["-a", "-c", "-f", out, ...names], { cwd: dir });
+      } catch (e2) {
+        if (e2.code !== "ENOENT" && t === "tar") throw e2;
+      }
+    }
+    throw new HttpError(501, "no zip tool on this machine (install zip or bsdtar)");
+  }
+}
+
+/** Pack photo n → absolute local file for the chosen colourway (same position in that colour's photo list). */
+async function zipSources(b, pack, ns, colour) {
+  const p = getProduct(b.product_slug);
+  let variant = null;
+  if (colour && colour !== b.product_slug) {
+    if (!SLUG_RE.test(colour)) throw bad("bad colour slug");
+    const list = await loadColourways(b.product_slug);
+    variant = list.find((c) => c.slug === colour);
+    if (!variant) throw new HttpError(404, `colour ${colour} is not a colourway of ${b.product_slug}`);
+  }
+  const out = [];
+  for (const it of ns) {
+    const ph = pack.photos.find((x) => x.n === it.n);
+    if (!ph || ph.idx === null) continue;
+    let abs = null;
+    if (variant) abs = variant.photos[ph.idx]?._abs || null;
+    else abs = p?.refs?.[ph.idx]?.path ? path.resolve(p.refs[ph.idx].path) : null;
+    if (!abs || !within(DATA_ROOT, abs) || !realWithin(DATA_ROOT, abs)) continue;
+    out.push({ ...it, abs, label: ph.label });
+  }
+  return out;
+}
+
+async function sendPhotoZip(req, res, b, items, zipName) {
+  if (!items.length) throw new HttpError(404, "no local photo files for this selection — run `node cli.mjs products sync` to download them");
+  const dir = path.join(DATA_ROOT, "briefs", b.code, `.zip-${process.pid}-${randomBytes(6).toString("hex")}`);
+  fs.mkdirSync(dir, { recursive: true });
+  const cleanup = () => fs.rm(dir, { recursive: true, force: true }, () => {});
+  try {
+    const names = [];
+    for (const it of items) {
+      const name = `${it.prefix || ""}${it.n}-${fileSlug(it.label)}${path.extname(it.abs).toLowerCase() || ".jpg"}`;
+      if (names.includes(name)) continue;
+      fs.copyFileSync(it.abs, path.join(dir, name));
+      names.push(name);
+    }
+    const zip = path.join(dir, "photos.zip");
+    await makeZip(dir, names, zip);
+    const st = fs.statSync(zip);
+    res.writeHead(200, {
+      ...BASE_HEADERS,
+      "Content-Type": "application/zip",
+      "Content-Length": st.size,
+      "Content-Disposition": `attachment; filename="${zipName}"`,
+      "Cache-Control": "no-store",
+    });
+    if (req.method === "HEAD") {
+      res.end();
+      cleanup();
+      return STREAMED;
+    }
+    const stream = fs.createReadStream(zip);
+    stream.on("error", () => res.destroy());
+    res.on("close", () => {
+      stream.destroy();
+      cleanup();
+    });
+    stream.pipe(res);
+    return STREAMED;
+  } catch (e) {
+    cleanup();
+    if (e instanceof HttpError) throw e;
+    throw new HttpError(500, "could not build the zip", { detail: String(e?.stderr || e?.message || e).slice(0, 300) });
+  }
+}
+
+function briefForZip(code) {
+  const c = briefsMod.normalizeCode(code);
+  if (!briefsMod.CODE_RE.test(c || "")) throw new HttpError(404, "code not found");
+  const b = briefsMod.getBrief(c);
+  if (!b) throw new HttpError(404, "code not found");
+  const pack = parsePack(b.prompt, getProduct(b.product_slug));
+  if (!pack?.photos?.length) throw new HttpError(404, "this code has no photo list yet");
+  return { b, pack };
+}
+async function apiBriefZip({ req, res, params: [code], query }) {
+  const { b, pack } = briefForZip(code);
+  const colour = query.get("colour") || null;
+  const ns = (pack.used_photos.length ? pack.used_photos : pack.photos.map((p) => p.n)).sort((x, y) => x - y).map((n) => ({ n }));
+  const items = await zipSources(b, pack, ns, colour);
+  return sendPhotoZip(req, res, b, items, `${b.code}${colour && colour !== b.product_slug ? `-${fileSlug(colour)}` : ""}-photos.zip`);
+}
+async function apiSceneZip({ req, res, params: [code, n], query }) {
+  const { b, pack } = briefForZip(code);
+  const sc = pack.scenes.find((s) => String(s.n).toLowerCase() === String(n).toLowerCase());
+  if (!sc) throw new HttpError(404, `no scene ${n} in ${b.code}`);
+  const colour = query.get("colour") || null;
+  // Numbered in attach order (start frame first) so the file list reads in the order Flow wants them.
+  const ns = sc.attach.filter((a) => a.kind === "photo" && !a.missing).map((a, i) => ({ n: a.n, prefix: `${i + 1}${a.start ? "-START" : ""}_` }));
+  if (!ns.length) throw new HttpError(404, `scene ${sc.n} attaches no store photo`);
+  const items = await zipSources(b, pack, ns, colour);
+  return sendPhotoZip(req, res, b, items, `${b.code}-scene-${fileSlug(sc.n)}${colour && colour !== b.product_slug ? `-${fileSlug(colour)}` : ""}-photos.zip`);
 }
 async function apiBriefCreate({ req }) {
   const body = await jsonBody(req);
@@ -1051,6 +1466,7 @@ const ROUTES = [
   ["GET", /^\/api\/styles\/([^/]+)$/, apiStyle],
   ["GET", /^\/api\/products$/, apiProducts],
   ["GET", /^\/api\/products\/([^/]+)$/, apiProduct],
+  ["GET", /^\/api\/products\/([^/]+)\/colourways$/, apiColourways],
   ["POST", /^\/api\/products\/([^/]+)\/refs\/(\d{1,4})\/approve$/, apiRefApprove],
   ["GET", /^\/api\/batches$/, apiBatches],
   ["POST", /^\/api\/batches$/, apiBatchCreate],
@@ -1059,6 +1475,8 @@ const ROUTES = [
   ["GET", /^\/api\/briefs$/, apiBriefs],
   ["POST", /^\/api\/briefs$/, apiBriefCreate],
   ["GET", /^\/api\/briefs\/([^/]+)$/, apiBrief],
+  ["GET", /^\/api\/briefs\/([^/]+)\/photos\.zip$/, apiBriefZip],
+  ["GET", /^\/api\/briefs\/([^/]+)\/scene\/([0-9A-Za-z]{1,4})\/photos\.zip$/, apiSceneZip],
 ];
 
 async function handleApi(req, res, rawPath, query) {
@@ -1082,6 +1500,7 @@ async function handleApi(req, res, rawPath, query) {
       }
     });
     const out = await fn({ req, res, params, query });
+    if (out === STREAMED) return;
     if (out instanceof Reply) return sendJson(res, out.status, out.body);
     return sendJson(res, 200, out ?? null);
   }

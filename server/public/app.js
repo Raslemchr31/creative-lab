@@ -2587,6 +2587,151 @@
     mount(seq, pageView("Prompt codes", `${list.length} code${list.length === 1 ? "" : "s"}`, body, h("a", { class: "btn btn-sm btn-primary", href: "#/" }, icon("plus", "i-sm"), "New (pick an ad)")));
   }
 
+  // ── Prompt code page = production board (one card per Flow scene) ─────────────
+  const FLOW_URL = "https://labs.google/fx/tools/flow";
+  const store = {
+    get(k, d) {
+      try {
+        const v = localStorage.getItem(k);
+        return v === null ? d : JSON.parse(v);
+      } catch {
+        return d;
+      }
+    },
+    set(k, v) {
+      try {
+        localStorage.setItem(k, JSON.stringify(v));
+      } catch {}
+    },
+  };
+  const AR_RE = /[؀-ۿ]/;
+
+  // Inline markdown → DOM (text nodes only): **bold**, `code`, «Arabic quotes», bare links.
+  function mdInline(text) {
+    const out = [];
+    const re = /(\*\*[^*]+\*\*|`[^`]+`|«[^»]*»|https?:\/\/[^\s)|]+)/g;
+    let last = 0;
+    let m;
+    const s = String(text || "");
+    while ((m = re.exec(s))) {
+      if (m.index > last) out.push(s.slice(last, m.index));
+      const t = m[0];
+      if (t.startsWith("**")) out.push(h("b", null, mdInline(t.slice(2, -2))));
+      else if (t.startsWith("`")) out.push(h("code", { class: "md-code" }, t.slice(1, -1)));
+      else if (t.startsWith("«")) out.push(h("span", { class: "ar", dir: "rtl", lang: "ar" }, t));
+      else {
+        const href = safeHref(t.replace(/[.,]+$/, ""));
+        out.push(href ? h("a", { class: "md-link", href, target: "_blank", rel: "noopener noreferrer" }, href.length > 60 ? `${href.slice(0, 57)}…` : href) : t);
+      }
+      last = m.index + t.length;
+    }
+    if (last < s.length) out.push(s.slice(last));
+    return out;
+  }
+  // Block markdown → DOM: tables, bullet / numbered lists, quotes, paragraphs.
+  function mdBlocks(md) {
+    const lines = String(md || "").replace(/\r\n?/g, "\n").split("\n");
+    const out = [];
+    let i = 0;
+    const cells = (l) => l.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
+    while (i < lines.length) {
+      const l = lines[i];
+      if (!l.trim() || /^-{3,}\s*$/.test(l.trim())) {
+        i++;
+        continue;
+      }
+      if (/^\s*\|/.test(l)) {
+        const rows = [];
+        while (i < lines.length && /^\s*\|/.test(lines[i])) rows.push(lines[i++]);
+        const body = rows.filter((r) => !/^\s*\|\s*:?-{2,}/.test(r));
+        const [head, ...rest] = body.map(cells);
+        out.push(
+          h(
+            "div",
+            { class: "md-table" },
+            h("table", { class: "tbl" }, h("thead", null, h("tr", null, (head || []).map((c) => h("th", null, mdInline(c))))), h("tbody", null, rest.map((r) => h("tr", null, r.map((c) => h("td", { dir: AR_RE.test(c) && !/[A-Za-z]{3}/.test(c) ? "rtl" : null }, mdInline(c))))))),
+          ),
+        );
+        continue;
+      }
+      if (/^\s*[-*]\s+/.test(l)) {
+        const items = [];
+        while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) items.push(lines[i++].replace(/^\s*[-*]\s+/, ""));
+        out.push(h("ul", { class: "listy md-list" }, items.map((t) => h("li", null, mdInline(t)))));
+        continue;
+      }
+      if (/^\s*\d+[.)]\s+/.test(l)) {
+        const items = [];
+        while (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])) items.push(lines[i++].replace(/^\s*\d+[.)]\s+/, ""));
+        out.push(h("ol", { class: "listy md-list" }, items.map((t) => h("li", null, mdInline(t)))));
+        continue;
+      }
+      if (/^>\s?/.test(l)) {
+        const q = [];
+        while (i < lines.length && /^>\s?/.test(lines[i])) q.push(lines[i++].replace(/^>\s?/, ""));
+        out.push(h("div", { class: "quote md-quote", dir: "auto" }, mdInline(q.join(" "))));
+        continue;
+      }
+      if (/^#{3,}\s+/.test(l)) {
+        out.push(h("h4", { class: "md-h" }, mdInline(l.replace(/^#+\s+/, ""))));
+        i++;
+        continue;
+      }
+      const para = [];
+      while (i < lines.length && lines[i].trim() && !/^\s*(\||[-*]\s|\d+[.)]\s|>|-{3,}\s*$|#{3,}\s)/.test(lines[i])) para.push(lines[i++]);
+      if (!para.length) {
+        i++;
+        continue;
+      }
+      out.push(h("p", { class: "md-p", dir: "auto" }, para.map((p, k) => [k ? h("br") : null, mdInline(p)])));
+    }
+    return h("div", { class: "md" }, out);
+  }
+
+  /** Swap the "[COLOUR LOCK: …]" segment(s) for the chosen colourway's lock; no marker → prepend it. */
+  function applyColourLock(prompt, lock) {
+    if (!prompt || !lock) return prompt;
+    let out = prompt;
+    let from = 0;
+    let found = false;
+    for (;;) {
+      const i = out.indexOf("[COLOUR LOCK:", from);
+      if (i === -1) break;
+      let depth = 0;
+      let j = i;
+      for (; j < out.length; j++) {
+        if (out[j] === "[") depth++;
+        else if (out[j] === "]" && --depth === 0) break;
+      }
+      if (j >= out.length) break; // unbalanced → leave the rest alone
+      out = out.slice(0, i) + lock + out.slice(j + 1);
+      from = i + lock.length;
+      found = true;
+    }
+    return found ? out : `${lock} ${out}`;
+  }
+  const sceneShowsProduct = (sc) => !!sc.prompt && (sc.prompt.includes("[COLOUR LOCK:") || sc.attach.some((a) => a.kind === "photo") || !!sc.start_frame_text);
+  const cwName = (c) => c?.name?.fr || c?.name?.ar || c?.slug || "";
+  const zipQS = (S) => (S.variant ? `?colour=${encodeURIComponent(S.variant.slug)}` : "");
+  const dlName = (n, label, file) => `${n}-${String(label || "photo").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 48) || "photo"}${(/\.(png|jpe?g|webp)$/i.exec(file || "") || [".jpg"])[0].toLowerCase()}`;
+
+  // Big copy button that confirms in place ("Copied ✓"); `text` may be a function (read at click time).
+  function bigCopy(text, label, { cls = "btn-primary", after } = {}) {
+    const lbl = h("span", null, label);
+    const b = h("button", { class: `btn ${cls} bigcopy`, type: "button" }, icon("copy", "i-sm"), lbl);
+    b.addEventListener("click", async () => {
+      const ok = await copyText(typeof text === "function" ? text() : text);
+      b.classList.add(ok ? "ok" : "err");
+      lbl.textContent = ok ? "Copied ✓" : "Copy failed";
+      if (ok && after) after();
+      setTimeout(() => {
+        b.classList.remove("ok", "err");
+        lbl.textContent = label;
+      }, 1800);
+    });
+    return b;
+  }
+
   async function viewBrief({ params: [code], seq }) {
     mountLoading(seq);
     let b;
@@ -2595,55 +2740,386 @@
     } catch (e) {
       return mount(seq, pageView(code, null, errorState(e, route)));
     }
-    const photos = h(
-      "div",
-      { class: "brief-photos" },
-      (b.product?.photos || []).map((ph, i) =>
-        h(
-          "figure",
-          null,
-          ph.file ? h("img", { src: ph.file, alt: "", loading: "lazy" }) : null,
-          h("figcaption", null, h("span", { class: "faint" }, `${i + 1} · ${ph.role}`), ph.url && h("a", { class: "btn btn-xs", href: ph.url, target: "_blank", rel: "noopener noreferrer", download: "" }, "Open"), ph.url && copyBtn(ph.url, "URL")),
+    const back = h("a", { class: "btn btn-sm", href: "#/briefs" }, icon("arrowLeft", "i-sm"), "All codes");
+    const sub = `${b.aspect} · ${b.duration_s}s · ${b.model} · mode ${b.mode}${b.notes ? ` · notes: ${b.notes}` : ""}`;
+    if (!b.prompt) {
+      return mount(
+        seq,
+        pageView(
+          b.code,
+          sub,
+          h(
+            "div",
+            { class: "stack" },
+            codeBox(b.code),
+            stateBox({ compact: true, iconName: "clock", title: "Waiting for Claude", text: `Send “${b.code}” in the chat. The scene-by-scene production board appears here once the prompt is written.` }),
+            panel("Reference", null, refCardMini(b.reference) || h("span", null, `${b.source_kind} ${b.source_id}`)),
+          ),
+          back,
         ),
-      ),
-    );
-    // Each "> …" block in the prompt is one paste-ready clip prompt → its own copy button.
-    const clipPrompts = [];
-    if (b.prompt) {
-      let clip = null;
-      for (const line of b.prompt.split("\n")) {
-        const m = /^##\s+((?:Clip|Scene) [^\n]+)/.exec(line);
-        if (m) clip = m[1];
-        else if (line.startsWith("> ") && clip) clipPrompts.push({ clip, text: line.slice(2).trim() });
-      }
+      );
     }
-    const promptBody = b.prompt
-      ? h(
-          "div",
-          null,
-          clipPrompts.length
-            ? h("div", { class: "stack", style: { marginBottom: "14px" } }, clipPrompts.map((c) => h("div", { class: "row", style: { gap: "10px", alignItems: "center" } }, copyBtn(c.text, "Copy"), h("b", null, c.clip))))
-            : null,
-          h("div", { class: "row", style: { justifyContent: "flex-end", marginBottom: "8px" } }, copyBtn(b.prompt, "Copy everything")),
-          h("pre", { class: "prompt-pre", dir: "auto" }, b.prompt),
-        )
-      : stateBox({ compact: true, iconName: "clock", title: "Waiting for Claude", text: `Send “${b.code}” in the chat. The prompt appears here once it is written.` });
-    mount(
-      seq,
-      pageView(
-        b.code,
-        `${b.aspect} · ${b.duration_s}s · ${b.model} · mode ${b.mode}${b.notes ? ` · notes: ${b.notes}` : ""}`,
+    if (!b.pack || !b.pack.scenes?.length) return mount(seq, pageView(b.code, sub, rawBriefBody(b), back));
+    mount(seq, briefBoard(b));
+  }
+
+  /** Old layout — only used when the markdown has no "## Scene …" sections to parse. */
+  function rawBriefBody(b) {
+    return h(
+      "div",
+      { class: "stack" },
+      h("div", { class: "note info" }, icon("info"), h("span", null, "This prompt is not in the scene-by-scene format, so it is shown as written.")),
+      panel("Prompt", "paste into Google Flow", h("div", null, h("div", { class: "row", style: { justifyContent: "flex-end", marginBottom: "8px" } }, copyBtn(b.prompt, "Copy everything")), h("pre", { class: "prompt-pre", dir: "auto" }, b.prompt))),
+      panel(
+        "Product photos",
+        "attach these in Flow",
+        h("div", { class: "brief-photos" }, (b.product?.photos || []).map((ph, i) => h("figure", null, ph.file ? h("img", { src: ph.file, alt: "", loading: "lazy" }) : null, h("figcaption", null, h("span", { class: "faint" }, `${i + 1} · ${ph.role}`), ph.file && h("a", { class: "btn btn-xs", href: ph.file, download: "" }, "Download"))))),
+      ),
+      panel("Reference", null, refCardMini(b.reference) || h("span", null, `${b.source_kind} ${b.source_id}`)),
+    );
+  }
+
+  function briefBoard(b) {
+    const pack = b.pack;
+    const code = b.code;
+    const keyDone = `cl.brief.${code}.done`;
+    const keyQa = `cl.brief.${code}.qa`;
+    const keyColour = `cl.brief.${code}.colour`;
+    const baseSlug = b.product?.slug || b.product_slug;
+    const S = { variant: null, colourways: null };
+    const done = new Set(store.get(keyDone, []));
+
+    const promptFor = (sc) => (S.variant && S.variant.colour_lock && sceneShowsProduct(sc) ? applyColourLock(sc.prompt, S.variant.colour_lock) : sc.prompt);
+    const everything = () => {
+      let md = b.prompt;
+      if (S.variant) for (const sc of pack.scenes) if (sc.prompt) md = md.split(sc.prompt).join(promptFor(sc));
+      return md;
+    };
+    /** Pack photo n → the photo to show for the chosen colour (same position in that colour's list). */
+    const photoFor = (n) => {
+      const base = pack.photos.find((p) => p.n === n);
+      if (!base) return null;
+      if (!S.variant) return { ...base, missing: !base.file };
+      const vp = base.idx !== null && base.idx !== undefined ? S.variant.photos[base.idx] : null;
+      return { ...base, file: vp?.file || null, thumb: vp?.thumb || null, missing: !vp?.file };
+    };
+
+    // ── header ──
+    const p = b.product;
+    // The chips below already show aspect / length / scene count → drop them from the title line.
+    const titleRest = (pack.title || "")
+      .replace(new RegExp(`^${code}\\s*·\\s*`), "")
+      .replace(/(\s*·\s*(\d+:\d+|~\s*[\d.]+\s*s(\s+total)?|\d+\s+scenes?(\s*\+\s*\d+\s+prep)?))+\s*$/i, "");
+    const videoScenes = pack.scenes.filter((s) => !s.prep).length;
+    const prepScenes = pack.scenes.length - videoScenes;
+    const zipAll = h("a", { class: "btn btn-sm", download: "" }, icon("image", "i-sm"), "Download all photos (.zip)");
+    const head = h(
+      "header",
+      { class: "bb-head panel" },
+      h(
+        "div",
+        { class: "bb-id" },
+        h("div", { class: "bb-code" }, h("span", { class: "code sm" }, code), copyBtn(`Write the Flow prompt for ${code}`, "Message for Claude")),
+        titleRest && h("div", { class: "bb-title", dir: "auto" }, titleRest),
         h(
           "div",
-          { class: "stack" },
-          codeBox(b.code),
-          panel("Prompt", "paste into Google Flow", promptBody),
-          panel("Product photos", "attach these in Flow (ingredients / frames)", photos),
-          panel("Reference", null, refCardMini(b.reference) || h("span", null, `${b.source_kind} ${b.source_id}`)),
+          { class: "chips" },
+          chip(`${videoScenes} scene${videoScenes === 1 ? "" : "s"}${prepScenes ? ` + ${prepScenes} prep` : ""}`, "lg paper"),
+          isNum(pack.total_s) && chip(`~${pack.total_s} s final cut`, "lg"),
+          chip(b.aspect, "lg outline"),
         ),
-        h("a", { class: "btn btn-sm", href: "#/briefs" }, icon("arrowLeft", "i-sm"), "All codes"),
+      ),
+      h(
+        "div",
+        { class: "bb-pair" },
+        p &&
+          h(
+            "div",
+            { class: "bb-thing" },
+            h("span", { class: "pimg light" }, p.thumb ? h("img", { src: p.thumb, alt: "" }) : null),
+            h("span", { class: "pt" }, h("span", { class: "faint" }, "Product"), h("b", { dir: "auto" }, productName(p)), h("span", { class: "price" }, h("b", null, fmtDA(p.price)), isNum(p.compareAt) && Number(p.compareAt) > Number(p.price) ? h("s", null, fmtDA(p.compareAt)) : null)),
+          ),
+        b.reference &&
+          h(
+            "a",
+            { class: "bb-thing", href: `#/ad/${encodeURIComponent(b.reference.id)}`, title: "Open the reference ad" },
+            h("span", { class: "pimg" }, b.reference.thumb ? h("img", { src: b.reference.thumb, alt: "" }) : null),
+            h("span", { class: "pt" }, h("span", { class: "faint" }, "Reference"), h("b", null, b.reference.page_name || b.reference.id), h("span", { class: "faint" }, `${formatLabel(b.reference)} · ${fmtDays(b.reference.days_active)} running`)),
+          ),
+      ),
+      h(
+        "div",
+        { class: "bb-actions" },
+        zipAll,
+        bigCopy(everything, "Copy everything", { cls: "btn-sm" }),
+        h("a", { class: "btn btn-sm btn-primary", href: FLOW_URL, target: "_blank", rel: "noopener noreferrer" }, icon("external", "i-sm"), "Open Google Flow"),
       ),
     );
+
+    // ── progress ──
+    const progFill = h("i");
+    const progText = h("span", { class: "bb-prog-t" });
+    const paintProgress = () => {
+      const n = pack.scenes.filter((s) => done.has(String(s.n))).length;
+      progFill.style.width = `${(100 * n) / pack.scenes.length}%`;
+      progText.replaceChildren(h("b", null, `${n}/${pack.scenes.length}`), " scenes done", n === pack.scenes.length ? " — ready to assemble" : "");
+    };
+    const progress = h("div", { class: "bb-prog" }, h("div", { class: "bar gold" }, progFill), progText);
+
+    // ── colour picker (lib/products/colour.mjs; hidden while it answers 503) ──
+    const colourRow = h("div", { class: "bb-colours", hidden: true });
+    const colourNote = h("div", { class: "bb-colour-note", hidden: true });
+    const paintColours = () => {
+      const list = S.colourways || [];
+      const cur = S.variant?.slug || baseSlug;
+      colourRow.replaceChildren(
+        h("span", { class: "bb-colours-l" }, "Colour"),
+        ...list.map((c) => {
+          const hex = c.store_hex || c.measured_hex || "#777";
+          const btn = h(
+            "button",
+            { class: ["cw", c.slug === cur && "sel", c.in_stock === false && "oos"], type: "button", "aria-pressed": String(c.slug === cur), title: [c.descriptor_en, c.in_stock === false ? "out of stock" : null].filter(Boolean).join(" · ") || null },
+            h("span", { class: "cw-dot", style: { background: hex } }),
+            h("span", null, cwName(c)),
+            c.name?.ar && h("span", { class: "ar faint", dir: "rtl", lang: "ar" }, c.name.ar),
+            c.slug === baseSlug && h("span", { class: "cw-base" }, "pack"),
+            c.in_stock === false && h("span", { class: "chip red" }, "out of stock — don't advertise"),
+          );
+          btn.addEventListener("click", () => pickColour(c.slug));
+          return btn;
+        }),
+      );
+      const v = S.variant;
+      if (!v) {
+        colourNote.hidden = true;
+      } else {
+        const counts = pack.used_photos.map((n) => photoFor(n)).filter(Boolean);
+        const missing = counts.filter((x) => x.missing).length;
+        colourNote.hidden = false;
+        colourNote.replaceChildren(
+          h(
+            "div",
+            { class: ["note", v.in_stock === false ? "" : "info"] },
+            icon(v.in_stock === false ? "alert" : "info"),
+            h(
+              "span",
+              null,
+              h("b", null, `${cwName(v)}: `),
+              "every product scene's prompt now carries the ",
+              h("b", null, `${cwName(v)} COLOUR LOCK`),
+              " and the photo strips + zips use the ",
+              cwName(v),
+              " photos.",
+              missing ? h("b", null, ` Only ${v.photos.filter((x) => x.file).length} photos for this colour — ${missing} slot${missing === 1 ? " is" : "s are"} empty below.`) : null,
+              v.in_stock === false ? h("b", null, " Out of stock — don't advertise this colour.") : null,
+            ),
+          ),
+        );
+      }
+      zipAll.setAttribute("href", `/api/briefs/${encodeURIComponent(code)}/photos.zip${zipQS(S)}`);
+    };
+    function pickColour(slug) {
+      S.variant = slug && slug !== baseSlug ? (S.colourways || []).find((c) => c.slug === slug) || null : null;
+      store.set(keyColour, S.variant ? S.variant.slug : null);
+      paintColours();
+      paintScenes();
+    }
+
+    // ── scene cards ──
+    const scenesBox = h("div", { class: "scenes" });
+    const sceneCard = (sc) => {
+      const id = String(sc.n);
+      const isDone = done.has(id);
+      const card = h("article", { class: ["scene-card", "panel", isDone && "done", sc.prep && "prep"], id: `scene-${id}` });
+      const doneBox = h("input", { type: "checkbox", checked: isDone || null });
+      doneBox.addEventListener("change", () => {
+        if (doneBox.checked) done.add(id);
+        else done.delete(id);
+        store.set(keyDone, [...done]);
+        card.classList.toggle("done", doneBox.checked);
+        paintProgress();
+      });
+      const refLine = [sc.ref_shot && `ref ${sc.ref_shot}`, sc.ref_time, sc.use && `use ${sc.use} in the edit`].filter(Boolean).join(" · ") || (sc.prep ? "prep — make this before the scenes that use it" : sc.meta);
+      const st = sc.settings || {};
+      const setChip = (k, v, cls = "") => (v === null || v === undefined || v === "" ? null : h("span", { class: `set ${cls}`.trim() }, h("span", { class: "k" }, k), h("span", { class: "v" }, String(v))));
+
+      // attach strip
+      const tiles = [];
+      let order = 0;
+      for (const a of sc.attach) {
+        order++;
+        if (a.kind === "photo") {
+          const ph = photoFor(a.n);
+          const label = ph?.label || `photo ${a.n}`;
+          tiles.push(
+            h(
+              "figure",
+              { class: ["att", a.start && "start", (!ph || ph.missing) && "missing"] },
+              h("span", { class: "att-order" }, String(order)),
+              ph && ph.file
+                ? h("button", { class: "att-img", type: "button", title: "Preview", onclick: () => lightbox(ph.file, `Photo ${a.n} · ${label}${S.variant ? ` · ${cwName(S.variant)}` : ""}`) }, h("img", { src: ph.thumb || ph.file, alt: `Photo ${a.n}`, loading: "lazy" }))
+                : h("div", { class: "att-img ph" }, icon("image"), h("span", null, S.variant ? `no ${cwName(S.variant)} photo` : "no local file")),
+              h(
+                "figcaption",
+                null,
+                a.start && h("span", { class: "chip gold" }, "START FRAME"),
+                h("span", { class: "att-n" }, `Photo ${a.n}`),
+                h("span", { class: "att-l", title: label }, label),
+                ph?.file && h("a", { class: "btn btn-xs", href: ph.file, download: dlName(a.n, label, ph.file) }, "Download"),
+              ),
+            ),
+          );
+        } else if (a.kind === "character") {
+          tiles.push(h("figure", { class: "att char" }, h("span", { class: "att-order" }, String(order)), h("div", { class: "att-img ph" }, h("b", null, `@${a.name}`)), h("figcaption", null, h("span", { class: "att-n" }, "Character"), h("span", { class: "att-l" }, "pick from Characters in Flow"))));
+        } else {
+          tiles.push(h("figure", { class: "att char" }, h("span", { class: "att-order" }, String(order)), h("div", { class: "att-img ph" }, icon("info")), h("figcaption", null, h("span", { class: "att-l", title: a.label }, a.label))));
+        }
+      }
+      const hasPhotos = sc.attach.some((a) => a.kind === "photo");
+      const startNote = sc.start_frame_text && !sc.start_frame ? h("div", { class: "note info sm" }, icon("info"), h("span", null, h("b", null, "Start frame: "), sc.start_frame_text)) : sc.start_frame_text ? h("div", { class: "faint sm" }, `Start frame: ${sc.start_frame_text}`) : null;
+      const attachBox =
+        tiles.length || startNote
+          ? h(
+              "div",
+              { class: "sc-attach" },
+              h("div", { class: "sc-label" }, tiles.length ? "Attach in this order" : "Start frame", hasPhotos && h("a", { class: "btn btn-xs", href: `/api/briefs/${encodeURIComponent(code)}/scene/${encodeURIComponent(id)}/photos.zip${zipQS(S)}`, download: "" }, icon("image", "i-sm"), "Download this scene's photos")),
+              tiles.length ? h("div", { class: "att-strip" }, tiles) : null,
+              startNote,
+            )
+          : h("div", { class: "sc-attach" }, h("div", { class: "sc-label" }, "Attach"), h("div", { class: "faint sm" }, "Nothing to attach — text only."));
+
+      // prompt
+      const text = promptFor(sc) || "";
+      const changed = !!S.variant && text !== sc.prompt;
+      const pbox = h("div", { class: "pbox collapsed", dir: "auto" }, text);
+      const more = h("button", { class: "btn btn-xs btn-ghost", type: "button" }, "Show the whole prompt");
+      more.addEventListener("click", () => {
+        const open = pbox.classList.toggle("collapsed");
+        more.textContent = open ? "Show the whole prompt" : "Show less";
+      });
+      const promptBox = sc.prompt
+        ? h(
+            "div",
+            { class: "sc-prompt" },
+            h("div", { class: "sc-label" }, "Prompt", h("span", { class: "faint" }, `${text.split(/\s+/).length} words`), changed && h("span", { class: "chip gold" }, `${cwName(S.variant)} colour applied`)),
+            pbox,
+            h(
+              "div",
+              { class: "sc-btns" },
+              bigCopy(() => promptFor(sc), "Copy prompt"),
+              bigCopy(() => promptFor(sc), "Copy prompt & open Flow", { cls: "btn-gold", after: () => window.open(FLOW_URL, "_blank", "noopener") }),
+              h("span", { class: "spacer" }),
+              more,
+            ),
+          )
+        : h("div", { class: "note" }, icon("alert"), h("span", null, "No “> …” prompt line found for this scene — see Copy everything."));
+
+      const notes = h(
+        "div",
+        { class: "sc-notes" },
+        sc.use_note && h("div", { class: "sn" }, h("b", null, "Use"), h("span", null, sc.use_note)),
+        sc.fallback && h("div", { class: "sn warn" }, h("b", null, "If it drifts"), h("span", null, sc.fallback.replace(/^If it drifts:\s*/i, ""))),
+        (sc.notes || []).map((n) => h("div", { class: "sn" }, h("b", null, "Note"), h("span", null, n))),
+      );
+
+      card.append(
+        h(
+          "div",
+          { class: "sc-head" },
+          h("span", { class: "sc-no" }, id),
+          h("div", { class: "sc-t" }, h("h3", { dir: "auto" }, sc.title), refLine && h("div", { class: "faint" }, refLine)),
+          h("span", { class: "spacer" }),
+          sc.prep && chip(/image/i.test(st.mode || "") ? "Prep · image" : "Prep", "violet"),
+          h("label", { class: "check sc-done" }, doneBox, h("span", null, "Done")),
+        ),
+        h("div", { class: "sc-sets" }, setChip("Model", st.model, "strong"), setChip("Mode", st.mode, "strong"), setChip("Aspect", st.aspect), setChip("Length", st.length), setChip("Outputs", st.outputs)),
+        h("div", { class: "sc-grid" }, attachBox, promptBox),
+      );
+      if (notes.childNodes.length) card.append(notes);
+      return card;
+    };
+    function paintScenes() {
+      scenesBox.replaceChildren(...pack.scenes.map(sceneCard));
+    }
+
+    // ── reference panels ──
+    const sec = pack.sections || {};
+    const fold = (title, hint, body, { open = false, actions } = {}) =>
+      h("details", { class: "bpanel panel", open: open || null }, h("summary", null, h("h2", null, title), hint && h("span", { class: "hint" }, hint), h("span", { class: "spacer" }), actions), h("div", { class: "panel-body" }, body));
+    const panels = [];
+    if (sec.intro?.markdown) panels.push(fold("About this pack", "method, what we keep / change, store photos", mdBlocks(sec.intro.markdown)));
+    if (sec.breakdown) panels.push(fold("Breakdown of the reference", sec.breakdown.title.replace(/^Breakdown of the reference\s*/i, ""), mdBlocks(sec.breakdown.markdown)));
+    if (sec.product_lock) panels.push(fold("Product lock", "pasted into every product scene", mdBlocks(sec.product_lock.markdown), { actions: copyBtn(sec.product_lock.markdown.replace(/\*\*/g, ""), "Copy") }));
+    if (sec.continuity) panels.push(fold("Continuity bible", "pasted at the end of every scene", mdBlocks(sec.continuity.markdown), { actions: copyBtn(sec.continuity.markdown.replace(/\*\*/g, ""), "Copy") }));
+    if (sec.voice_over) {
+      const intro = sec.voice_over.markdown.split("\n").filter((l) => !/^\s*[-*]\s+/.test(l)).join("\n");
+      panels.push(
+        fold(
+          "Voice-over",
+          pack.vo_lines.length ? `${pack.vo_lines.length} Darija line${pack.vo_lines.length === 1 ? "" : "s"}` : null,
+          h(
+            "div",
+            { class: "stack" },
+            mdBlocks(intro),
+            pack.vo_lines.length
+              ? h("div", { class: "vo-lines" }, pack.vo_lines.map((v) => h("div", { class: "vo" }, h("span", { class: "chip mono" }, v.time), h("span", { class: "vo-t ar", dir: "rtl", lang: "ar" }, v.text), copyBtn(v.text, "Copy"))))
+              : null,
+          ),
+        ),
+      );
+    }
+    if (sec.assembly) panels.push(fold(sec.assembly.title.replace(/\s*\(.*$/, "") || "Assembly", (/\(([^)]*)\)/.exec(sec.assembly.title) || [])[1] || "the edit", mdBlocks(sec.assembly.markdown)));
+    if (sec.qa) {
+      const checked = new Set(store.get(keyQa, []));
+      const qaBody = pack.qa_items.length
+        ? h(
+            "div",
+            { class: "qa-list" },
+            pack.qa_items.map((t, i) => {
+              const cb = h("input", { type: "checkbox", checked: checked.has(i) || null });
+              cb.addEventListener("change", () => {
+                if (cb.checked) checked.add(i);
+                else checked.delete(i);
+                store.set(keyQa, [...checked]);
+              });
+              return h("label", { class: "check qa-item" }, cb, h("span", { dir: "auto" }, mdInline(t)));
+            }),
+          )
+        : mdBlocks(sec.qa.markdown);
+      panels.push(fold("QA before posting", "tick each one before the ad goes live", qaBody));
+    }
+    for (const o of sec.other || []) panels.push(fold(o.title, null, mdBlocks(o.markdown)));
+
+    const board = h(
+      "section",
+      { class: "view brief-board" },
+      h("div", { class: "crumbs" }, h("a", { href: "#/briefs" }, icon("arrowLeft", "i-sm"), "All codes")),
+      head,
+      h("div", { class: "bb-bar" }, progress, colourRow),
+      colourNote,
+      scenesBox,
+      h("div", { class: "section-title bb-more" }, "Pack reference"),
+      h("div", { class: "bpanels" }, panels),
+    );
+    paintColours();
+    paintProgress();
+    paintScenes();
+
+    // Colourways load after the board is up; any failure (503 while lib/products/colour.mjs is missing) keeps the picker hidden.
+    if (baseSlug) {
+      api(`/api/products/${encodeURIComponent(baseSlug)}/colourways`)
+        .then((r) => {
+          const items = (r?.items || []).filter((c) => c && c.slug);
+          if (items.length < 2) return;
+          S.colourways = items;
+          colourRow.hidden = false;
+          const saved = store.get(keyColour, null);
+          if (saved && items.some((c) => c.slug === saved)) pickColour(saved);
+          else paintColours();
+        })
+        .catch(() => {});
+    }
+    return board;
   }
 
   window.addEventListener("hashchange", route);

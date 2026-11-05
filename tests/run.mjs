@@ -143,6 +143,57 @@ await section("colour: CIEDE2000 (Sharma 2005 test pairs)", async () => {
   ok("white Lab", Math.abs(color.rgbToLab(255, 255, 255)[0] - 100) < 0.01);
 });
 
+await section("product colour: measured hex, names, colour lock, colourways()", async () => {
+  const C = await import("../lib/products/colour.mjs");
+  const P = (f) => path.join(FX, "products", f).replace(/\\/g, "/");
+  const near = (hex, want, tol) => color.deltaE00(color.hexToLab(hex), color.hexToLab(want)) <= tol;
+  // Real packshot (pack-hobo-rose sneakers, white sweep): full-res store photo measured #D6B7B0.
+  const rose = C.measurePhotoColour(P("packshot-hobo-rose.jpg"), { prior: "#E3B7B2" });
+  ok("rose packshot measured", !!rose, "null");
+  ok("rose hex ≈ #D7B7AF (ΔE00 ≤ 2.5)", rose && near(rose.hex, "#D7B7AF", 2.5), rose?.hex);
+  ok("rose is pink, not white sole / background", rose && C.colourName(rose.hex).family === "pink", rose && JSON.stringify(C.colourName(rose.hex)));
+  // Black packshots stay black (sheen must not turn a black bag charcoal).
+  const croco = C.measurePhotoColour(P("packshot-croco.png"));
+  ok("black croco measured black", croco && C.colourName(croco.hex).family === "black", croco?.hex);
+  ok("scene photo → null", C.measurePhotoColour(P("scene-hobo.jpg")) === null);
+  // Synthetic: pink body + gold stripe + black sole on white — hardware/sole must not pull the value.
+  const syn = path.join(TMP, "syn-pink.png");
+  const { spawnSync } = await import("node:child_process");
+  spawnSync("magick", ["-size", "300x300", "xc:#FFFFFF", "-fill", "#D9A0A8", "-draw", "rectangle 60,60 240,200", "-fill", "#C9A55C", "-draw", "rectangle 140,60 158,200", "-fill", "#111111", "-draw", "rectangle 60,200 240,222", syn], { windowsHide: true });
+  const s = C.measurePhotoColour(syn);
+  ok("synthetic body colour exact (ΔE00 ≤ 1.5)", s && near(s.hex, "#D9A0A8", 1.5), s?.hex);
+  const s2 = C.measurePhotoColour(syn, { prior: "#1A1A1A" });
+  ok("prior picks the matching cluster (black sole)", s2 && C.colourName(s2.hex).family === "black", s2?.hex);
+  // Names.
+  const fam = (h) => C.colourName(h).family;
+  ok("name black", fam("#1A1A1A") === "black" && fam("#0A0A0A") === "black");
+  ok("name pink", fam("#E3B7B2") === "pink" && fam("#D4A0A6") === "pink");
+  ok("name beige", fam("#CBC0B3") === "beige" && fam("#9E8675") === "beige");
+  ok("name brown", fam("#6B4230") === "brown" && fam("#503A2A") === "brown");
+  ok("name blue/red/white", fam("#2E4362") === "blue" && fam("#5E1B2A") === "red" && fam("#F6F6F3") === "white");
+  ok("hex round-trip", C.labToRgb(color.hexToLab("#9E8675")).join() === "158,134,117");
+  // Colour lock sentence.
+  const spec = { pieces: [{ id: "bag", en: "hobo bag" }, { id: "sneakers", en: "sneakers" }], colourways: { "x-rose": { colour_notes: "Sneakers have a chunky WHITE sole" } } };
+  const lock = C.colourLockSentence({ slug: "x-rose", measured_hex: "#D6B7B0", descriptor_en: "blush pink" }, spec);
+  ok("lock has bracket marker + hex", lock.startsWith("[COLOUR LOCK:") && lock.endsWith("]") && lock.includes("#D6B7B0"), lock);
+  ok("lock names pieces + notes", lock.includes("the bag body and the sneakers' uppers are blush pink") && lock.includes("WHITE sole"), lock);
+  // colourways(): every colourway of the family (incl. out of stock), cached in products.json.
+  const { saveProducts, getProduct } = await import("../lib/products/sync.mjs");
+  const { run: dbRun } = await import("../lib/db.mjs");
+  const prod = (slug, fr, hex, file, inStock) => ({ slug, name: { ar: "", fr }, category: "packs", price: 3900, compareAt: null, description: { ar: "", fr: "" }, details: { ar: [], fr: [] }, images: [`https://fixture.local/${file}`], colors: [{ name: { ar: "", fr }, hex }], inStock, url: `https://x/${slug}` });
+  saveProducts([prod("unitcol-pack-rose", "Rose", "#E3B7B2", "packshot-hobo-rose.jpg", true), prod("unitcol-pack-noir", "Noir", "#1A1A1A", "packshot-croco.png", false)], "fixture");
+  for (const [slug, f] of [["unitcol-pack-rose", "packshot-hobo-rose.jpg"], ["unitcol-pack-noir", "packshot-croco.png"]]) dbRun("UPDATE products SET refs=? WHERE slug=?", JSON.stringify([{ url: `https://fixture.local/${f}`, path: P(f), role: "hero", source: "store", approved: true }]), slug);
+  const cws = C.colourways("unitcol-pack-rose");
+  ok("colourways: both incl. out-of-stock", cws.length === 2 && cws.some((c) => c.slug === "unitcol-pack-noir" && c.in_stock === false), JSON.stringify(cws.map((c) => [c.slug, c.in_stock])));
+  const r = cws.find((c) => c.slug === "unitcol-pack-rose");
+  const shape = ["slug", "in_stock", "name", "store_hex", "measured_hex", "descriptor_en", "family", "colour_lock", "photos"].every((k) => k in r);
+  ok("colourways item shape (UI contract)", shape && r.photos[0].file && r.photos[0].url && r.photos[0].role === "hero", JSON.stringify(r));
+  ok("colourways measured + ΔE vs store", r.measured_hex && typeof r.deltaE_store_vs_measured === "number" && r.colour_lock.includes(r.measured_hex));
+  ok("measurement cached in product json", getProduct("unitcol-pack-rose").colour_measured?.hex === r.measured_hex);
+  saveProducts([prod("unitcol-pack-rose", "Rose", "#E3B7B2", "packshot-hobo-rose.jpg", true)], "fixture");
+  ok("cache survives re-sync", getProduct("unitcol-pack-rose").colour_measured?.hex === r.measured_hex);
+});
+
 await section("registry: input validation + price estimate", async () => {
   const good = registry.validateInput("nano-banana-pro", { prompt: "x", image_input: ["https://a/b.png"], aspect_ratio: "4:5", resolution: "2K" });
   ok("nano-banana-pro valid", good.length === 0, good.join("; "));

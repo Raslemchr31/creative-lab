@@ -60,6 +60,13 @@ Project `C:/Users/DELL/ad-engine/creative-lab/`. Worked example: `data/briefs/FL
 - Owner rules: the **full pack visible in the first scene's first frame**; no on-screen text/prices/logos from the model
   (they're added in the edit); price + «الدفع عند الاستلام» rail from frame 0; no SFX on cuts; never copy the
   competitor's marks, faces, signature sets or music — borrow light, pacing, camera language, styling.
+- **Colour variants (owner 2026-11-05):** every product prompt carries exactly one bracketed
+  `[COLOUR LOCK: …]` segment (from `product.colourways[].colour_lock` in context.json — measured hex + descriptor +
+  per-piece exceptions like sole colour). Everywhere else describe shape/material/hardware WITHOUT colour words for
+  the product, so the UI's colour picker can swap the lock (and the photo strip) to any colourway. Product-free scenes
+  have no lock.
+- **Photo list format** near the top: a numbered list `N. **label:** <url>` using the store photo URLs — the UI matches
+  them to thumbnails and builds the zip downloads; settings lines say `Attach: **5, 6, 2**` / `**Start frame:** photo 2`.
 - Choose the model per scene: product-in-scene → Fast Ingredients (or Frames from the hero still); product-free
   atmosphere → **Quality** Text/Frames; anything with a voice → Omni Flash.
 

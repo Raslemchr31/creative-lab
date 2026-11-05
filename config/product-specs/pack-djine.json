@@ -37,34 +37,41 @@
     "pack-djine-beige": {
       "name_en": "beige",
       "hex": "#9E8675",
-      "in_stock": true
+      "in_stock": true,
+      "colour_notes": "The handles, the vertical woven ribbon stripe, the round logo patch and the small clip-on pouch are a lighter tan-beige leather-look — NOT the body colour (they read only slightly lighter than this mocha body). Sneakers are fully tonal: mocha sole matching the uppers, light-beige laces"
     },
     "pack-djine-bleu": {
       "name_en": "denim blue",
       "hex": "#2E4362",
-      "in_stock": true
+      "in_stock": true,
+      "colour_notes": "The handles, the vertical woven ribbon stripe, the round logo patch and the small clip-on pouch are a lighter tan-beige leather-look — NOT the body colour. Sneakers have a chunky WHITE sole and navy laces"
     },
     "pack-djine-grenad": {
       "name_en": "garnet red",
       "hex": "#661E2E",
-      "in_stock": false
+      "in_stock": false,
+      "colour_notes": "The handles, the vertical woven ribbon stripe, the round logo patch and the small clip-on pouch are a lighter tan-beige leather-look — NOT the body colour. Sneakers have a chunky WHITE sole and dark-brown laces"
     },
     "pack-djine-marron": {
       "name_en": "brown",
       "hex": "#503A2A",
-      "in_stock": true
+      "in_stock": true,
+      "colour_notes": "The handles, the vertical woven ribbon stripe, the round logo patch and the small clip-on pouch are a lighter tan-beige leather-look — NOT the body colour. Sneakers have a chunky WHITE sole and dark-brown laces"
     },
     "pack-djine-noire": {
       "name_en": "black",
       "hex": "#1A1A1A",
-      "in_stock": true
+      "in_stock": true,
+      "colour_notes": "The handles, the vertical woven ribbon stripe, the round logo patch and the small clip-on pouch are a lighter tan-beige leather-look — NOT the body colour. All-black sneakers: chunky BLACK sole and black laces"
     },
     "pack-djine-rose": {
       "name_en": "blush pink",
       "hex": "#E3B7B2",
-      "in_stock": true
+      "in_stock": true,
+      "colour_notes": "Exception: on the pink colourway the handles and the clip-on croco pouch are a PALE pink (lighter than the body), and the ribbon stripe is pale pink with a rose-gold motif. Sneakers have a chunky WHITE sole and light gold-beige laces"
     }
   },
   "written_by": "claude from store photos 2026-11-01",
-  "confirmed_by_owner": false
+  "confirmed_by_owner": false,
+  "colour_notes_by": "claude from store photos 2026-11-05 (colour.mjs measurement pass)"
 }

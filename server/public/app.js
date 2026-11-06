@@ -969,7 +969,7 @@
           d.page?.active_ads_seen ? h("span", null, `${fmtNum(d.page.active_ads_seen)} active ads seen for this page`) : null,
         ),
       ),
-      h("div", { class: "detail-actions" }, starBtn, hideBtn, h("a", { class: "btn btn-sm btn-primary", href: `#/brief/new?ad=${encodeURIComponent(ad.ad_archive_id)}`, title: "Pick a product + format and get a code to send to Claude for a ready-to-paste video prompt" }, icon("plus", "i-sm"), "Get prompt code"), h("a", { class: "btn btn-sm", href: d.library_url, target: "_blank", rel: "noopener noreferrer" }, "Open in Ad Library", icon("external", "i-sm"))),
+      h("div", { class: "detail-actions" }, starBtn, hideBtn, h("a", { class: "btn btn-primary btn-lg", href: `#/brief/new?ad=${encodeURIComponent(ad.ad_archive_id)}`, title: "Pick a product + format and get a code to send to Claude for a ready-to-paste video prompt" }, icon("plus", "i-sm"), "Get prompt code"), h("a", { class: "btn btn-sm", href: d.library_url, target: "_blank", rel: "noopener noreferrer" }, "Open in Ad Library", icon("external", "i-sm"))),
     );
 
     return h(
@@ -2453,15 +2453,17 @@
         ),
       );
     }
-    const S = { product: null, aspect: "9:16", duration_s: 8, model: "veo-3.1-fast", mode: "auto", vo: "auto", notes: "" };
+    // Owner 2026-11-06: direct flow — ad → product → voice-over yes/no → colours → one big button.
+    // Default output = ONE Flow video with all scenes (Omni, 10 s, fast cuts); scene-by-scene lives under "More options".
+    const S = { product: null, aspect: "9:16", duration_s: 10, model: "omni-flash", mode: "auto", vo: null, format: "one-video", colours: "all", notes: "" };
     const plist = sortProducts(products).filter((p) => p.inStock);
-    const pSearch = h("input", { class: "input", type: "search", placeholder: "Search products…", "aria-label": "Search products" });
-    const pGrid = h("div", { class: "pick-grid", role: "radiogroup", "aria-label": "Product" });
+    const pSearch = h("input", { class: "input input-lg", type: "search", placeholder: "Search products…", "aria-label": "Search products" });
+    const pGrid = h("div", { class: "pick-grid pick-grid-lg", role: "radiogroup", "aria-label": "Product" });
     const tiles = [];
     for (const p of plist) {
       const t = h(
         "button",
-        { class: "pick", type: "button", "aria-pressed": "false", title: p.slug },
+        { class: "pick pick-lg", type: "button", "aria-pressed": "false", title: p.slug },
         h("span", { class: "pimg" }, p.thumb ? h("img", { src: p.thumb, alt: "", loading: "lazy" }) : null),
         h("span", { class: "pt" }, h("span", { class: "nm", dir: "auto" }, productName(p)), h("span", { class: "sb" }, `${fmtDA(p.price)}${p.freeGift ? " · gift" : ""}`)),
         h("span", { class: "tick" }, icon("check")),
@@ -2478,6 +2480,39 @@
       const q = pSearch.value.trim().toLowerCase();
       for (const { el, p } of tiles) el.hidden = !!q && ![p.slug, p.name?.ar, p.name?.fr].some((x) => String(x || "").toLowerCase().includes(q));
     });
+    // Big two-way choice cards.
+    const bigChoice = (opts, cur, onPick) => {
+      const wrap = h("div", { class: "big-choice", role: "radiogroup" });
+      const paintC = (v) => [...wrap.children].forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === String(v))));
+      for (const [v, title, sub] of opts) {
+        const b = h("button", { class: "big-opt", type: "button", dataset: { v: String(v) } }, h("span", { class: "bo-t" }, title), sub && h("span", { class: "bo-s" }, sub));
+        b.addEventListener("click", () => {
+          paintC(v);
+          onPick(v);
+          paint();
+        });
+        wrap.append(b);
+      }
+      paintC(cur);
+      return wrap;
+    };
+    const voPick = bigChoice(
+      [
+        ["on", "Yes — Darija voice-over", "a female Algerian voice reads short Darija lines"],
+        ["off", "No voice-over", "sound effects only"],
+      ],
+      S.vo,
+      (v) => (S.vo = v),
+    );
+    const colPick = bigChoice(
+      [
+        ["all", "All colours", "every in-stock colour of this product in one video"],
+        ["one", "This colour only", "just the product you picked"],
+      ],
+      S.colours,
+      (v) => (S.colours = v),
+    );
+    // More options (rarely needed).
     const durWrap = h("div");
     const paintDur = () => {
       const opts = (S.model === "omni-flash" ? [4, 6, 8, 10] : [4, 6, 8]).map((d) => [d, `${d} s`]);
@@ -2485,28 +2520,42 @@
       durWrap.replaceChildren(segBtns(opts, S.duration_s, (v) => (S.duration_s = Number(v))));
     };
     paintDur();
-    const modelSel = h("select", { class: "select", "aria-label": "Model" }, BRIEF_MODELS.map(([v, t]) => h("option", { value: v }, t)));
+    const modelSel = h("select", { class: "select", "aria-label": "Model" }, BRIEF_MODELS.map(([v, t]) => h("option", { value: v, selected: v === S.model }, t)));
     modelSel.addEventListener("change", () => {
       S.model = modelSel.value;
       paintDur();
     });
-    const voSel = h("select", { class: "select", "aria-label": "Darija voice-over" }, [["auto", "Only if the original has a voice"], ["on", "Yes — write a Darija voice-over"], ["off", "No voice-over"]].map(([v, t]) => h("option", { value: v }, t)));
-    voSel.addEventListener("change", () => (S.vo = voSel.value));
     const modeSel = h("select", { class: "select", "aria-label": "Mode" }, BRIEF_MODES.map(([v, t]) => h("option", { value: v }, t)));
     modeSel.addEventListener("change", () => (S.mode = modeSel.value));
-    const notes = h("textarea", { class: "input", rows: 3, placeholder: "Optional: anything specific (colour to feature, mood, keep it calm, show the gift…)", style: { width: "100%" } });
+    const notes = h("textarea", { class: "input", rows: 3, placeholder: "Optional: anything specific (mood, show the gift, calm pace…)", style: { width: "100%" } });
     notes.addEventListener("input", () => (S.notes = notes.value));
-    const go = h("button", { class: "btn btn-primary", type: "button" }, "Get the code");
-    const status = h("span", { class: "hint" });
+    const more = h(
+      "details",
+      { class: "more-opts" },
+      h("summary", null, "More options"),
+      h(
+        "div",
+        { class: "form-grid" },
+        h("label", null, "Output", segBtns([["one-video", "One video, all scenes"], ["scenes", "Scene by scene"]], S.format, (v) => (S.format = v))),
+        h("label", null, "Aspect", segBtns([["9:16", "9:16 Reels/Stories"], ["16:9", "16:9"]], S.aspect, (v) => (S.aspect = v))),
+        h("label", null, "Model", modelSel),
+        h("label", null, "Length", durWrap),
+        h("label", null, "Mode", modeSel),
+        h("label", { class: "wide" }, "Notes", notes),
+      ),
+    );
+    const go = h("button", { class: "btn btn-primary btn-xl", type: "button" }, icon("film"), "Get the code");
+    const status = h("span", { class: "go-status" });
     const result = h("div");
     const paint = () => {
-      go.disabled = !S.product;
-      status.textContent = S.product ? `${S.product} · ${S.aspect} · ${S.duration_s}s` : "pick a product";
+      const missing = [!S.product && "a product", !S.vo && "voice-over yes/no"].filter(Boolean);
+      go.disabled = missing.length > 0;
+      status.textContent = missing.length ? `Pick ${missing.join(" and ")}` : `${S.product} · ${S.vo === "on" ? "Darija voice-over" : "no voice-over"} · ${S.colours === "all" ? "all colours" : "one colour"}`;
     };
     go.addEventListener("click", async () => {
       go.disabled = true;
       try {
-        const b = await api("/api/briefs", { method: "POST", body: { source_kind: ref ? "ad" : "style", source_id: ref ? ref.id : style.id, product_slug: S.product, aspect: S.aspect, duration_s: S.duration_s, model: S.model, mode: S.mode, vo: S.vo, notes: S.notes || null } });
+        const b = await api("/api/briefs", { method: "POST", body: { source_kind: ref ? "ad" : "style", source_id: ref ? ref.id : style.id, product_slug: S.product, aspect: S.aspect, duration_s: S.duration_s, model: S.model, mode: S.mode, vo: S.vo, format: S.format, colours: S.colours, notes: S.notes || null } });
         result.replaceChildren(codeBox(b.code, true));
         result.scrollIntoView({ behavior: "smooth", block: "center" });
       } catch (e) {
@@ -2517,31 +2566,21 @@
     });
     paint();
     const refBlock = ref ? refCardMini(ref) : h("div", { class: "brief-ref" }, h("span", { class: "pt" }, h("b", null, style.name || style.id), h("span", { class: "faint" }, "Style card")));
+    const step = (n, title, hint, body) => h("section", { class: "bstep" }, h("div", { class: "bstep-head" }, h("span", { class: "bstep-no" }, String(n)), h("h2", null, title), hint && h("span", { class: "hint" }, hint)), body);
     mount(
       seq,
       pageView(
         "New prompt code",
-        "Reference + product + format → a short code. Send the code to Claude; you get back a ready-to-paste Flow prompt and the exact product photos to attach.",
+        "Pick the product and the voice-over, get a code, send it to Claude. You get one ready-to-paste Flow prompt plus the folder of photos to upload.",
         h(
           "div",
-          { class: "stack" },
-          panel("1 · Reference", "the ad whose format we copy", refBlock),
-          panel("2 · Product", "in-stock store products", h("div", null, h("div", { class: "filterbar" }, h("div", { class: "search" }, icon("search"), pSearch)), pGrid)),
-          panel(
-            "3 · Format",
-            "Google Flow",
-            h(
-              "div",
-              { class: "form-grid" },
-              h("label", null, "Aspect", segBtns([["9:16", "9:16 Reels/Stories"], ["16:9", "16:9"]], S.aspect, (v) => (S.aspect = v))),
-              h("label", null, "Model", modelSel),
-              h("label", null, "Length per scene", durWrap),
-              h("label", null, "Mode", modeSel),
-              h("label", null, "Darija voice-over", voSel),
-              h("label", { class: "wide" }, "Notes", notes),
-            ),
-          ),
-          h("div", { class: "row", style: { gap: "12px", alignItems: "center" } }, go, status),
+          { class: "brief-new" },
+          step(1, "Reference ad", "the ad whose format we copy", h("div", { class: "brief-ref-lg" }, refBlock)),
+          step(2, "Product", "in-stock store products", h("div", { class: "stack-sm" }, pSearch, pGrid)),
+          step(3, "Voice-over in Darija?", null, voPick),
+          step(4, "Colours", null, colPick),
+          more,
+          h("div", { class: "go-bar" }, go, status),
           result,
         ),
       ),
@@ -2549,12 +2588,20 @@
   }
 
   function codeBox(code, fresh = false) {
+    const msg = `Write the Flow prompt for ${code}`;
+    const big = h("button", { class: "btn btn-primary btn-xl copy", type: "button" }, icon("copy"), h("span", null, "Copy message for Claude"));
+    big.addEventListener("click", async () => {
+      const ok = await copyText(msg);
+      big.lastChild.textContent = ok ? "Copied — paste it to Claude" : "Copy failed";
+      setTimeout(() => (big.lastChild.textContent = "Copy message for Claude"), 2000);
+    });
     return h(
       "div",
       { class: "codebox" },
       h("div", { class: "faint" }, fresh ? "Your code — send it to Claude:" : "Code"),
       h("div", { class: "code" }, code),
-      h("div", { class: "row", style: { gap: "8px", justifyContent: "center" } }, copyBtn(code, "Copy code"), copyBtn(`Write the Flow prompt for ${code}`, "Copy message for Claude"), fresh && h("a", { class: "btn btn-xs", href: `#/brief/${code}` }, "Open")),
+      big,
+      h("div", { class: "row", style: { gap: "8px", justifyContent: "center" } }, copyBtn(code, "Copy code only"), fresh && h("a", { class: "btn btn-sm", href: `#/brief/${code}` }, "Open the code page")),
     );
   }
 

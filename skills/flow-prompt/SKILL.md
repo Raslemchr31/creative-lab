@@ -1,11 +1,11 @@
 ---
 name: flow-prompt
-description: Turn a creative-lab prompt code (FL-XXXXX = reference ad + SIRINE store product + format) into a scene-by-scene Google Flow production pack — the reference broken into its shots, one rich standalone prompt per scene rebuilt around the real product, a continuity bible repeated in every scene, prep assets (character + product hero still), an optional Darija voice-over, and the edit/assembly plan.
+description: Turn a creative-lab prompt code (FL-XXXXX = reference ad + SIRINE store product + format) into a Google Flow prompt — by default ONE combined all-scenes video prompt (Omni, 10 s, fast cuts, optional Arabic-script Darija voice-over, all colourways), delivered as a numbered UPLOAD photo folder + a Notepad prompt file; or the older scene-by-scene production pack.
 trigger: ["FL-", "prompt code", "flow prompt", "write the flow prompt", "/flow-prompt", "veo prompt for"]
 when_to_use: Whenever the owner sends a code like FL-7K2QM (or "write the Flow prompt for FL-…"). Codes are made in the lab UI (ad → "Get prompt code") or with `node cli.mjs brief new`.
 ---
 
-# flow-prompt — code → scene-by-scene Flow production pack
+# flow-prompt — code → Flow prompt (one-video default, scene-by-scene optional)
 
 Owner's bar (2026-11-05): "split, detailed prompts per scene based on the products, generate the scenes separately
 and combine them later; add a Darija voice-over if the original has one; Flow models are advanced — use them,
@@ -13,7 +13,46 @@ don't hold back." Sloppy = one vague prompt for a whole ad. Good = the reference
 
 Project `C:/Users/DELL/ad-engine/creative-lab/`. Worked example: `data/briefs/FL-KUYV6/PROMPT.md`.
 
-## Steps (all of them, from evidence)
+## ★ DEFAULT FORMAT (owner 2026-11-06): ONE video, all scenes, one paste — `format: one-video` in the brief header
+The CONTEXT.md header says `ONE video, all scenes, 10s total` / `scenes per scene`, `Darija VO on|off|auto`, and
+`colours ALL in-stock colourways | picked colourway only`. For `one-video` (the default from the UI):
+
+1. `node cli.mjs brief context --code …`. Build the evidence if it's missing. Read the contact sheet, the hook strip
+   and all product photos, as below.
+2. Write **ONE prompt for ONE Flow generation**: Omni (newest), 9:16, **10 s max**, 720p, 1 output, 5–6 shots of
+   ~1.5–2 s with hard cuts on movement. Use this skeleton; the worked example is
+   `data/briefs/FL-HCGC7/PROMPT-4-COLOURS-v5-10s.txt`:
+   `TASK:` first line ("Generate ONE single VIDEO (not images)…", model, ratio, duration, resolution, outputs, audio)
+   → `STYLE:` → `REFERENCES (attached): Image 1 = … ` → `PRODUCT` (one design block, no colour words) →
+   `THE FOUR COLOURS` (one line per colourway: colour + sole/lace exceptions; for `colours one` keep only the picked
+   one) + a "never mix/swap" sentence + a fixed left→right line-up order, alternating light/dark →
+   `STUDIO` (+ hands) → `SHOTS:` `1 (0–2 s) …` → `VOICE-OVER` → `SOUND EFFECTS` (no music, no whooshes).
+3. **Voice-over** (`vo on`; for `auto`, only if the reference has speech): 2 short lines in 10 s, max ~8 words each.
+   - Write the Arabic **in Arabic script with tashkeel**. Put each line **alone on its own line**, with no
+     «» quotes and no Latin text on that line.
+   - Put the timing on the line above it ("Line 1, from 0.3 to 4.5 seconds:"). Put a
+     `(pronounced: …)` Latin guide on the line below it.
+   - Describe the voice: young Algerian woman, Algiers Darija, NOT Egyptian/Gulf/Moroccan/MSA, warm, clean
+     close-mic, off-screen.
+   - Keep the price out of the voice. It goes in the edit.
+   - Validate every line with validate-compliance (the Arabic and the arabizi, one line at a time).
+   - Arabizi-only lines came out sloppy, and Arabic copied from chat came out reversed. Arabic copied from Notepad
+     comes out right.
+4. **Deliver with `tools/flow-deliver.mjs`. Do this every time; it is not optional.** It copies the numbered photos to
+   `Downloads/<CODE> <label>/UPLOAD/`, writes `<CODE> FLOW PROMPT.txt` as UTF-8 with a BOM, and opens **Explorer on
+   UPLOAD plus Notepad on the prompt**:
+   `node tools/flow-deliver.mjs --code FL-X --label <slug> --prompt <file> --photo "1-ROSE-pack=<src>" --photo …`
+   - Photo order = the `Image N` order in the prompt.
+   - For `colours all`: one pack/hero photo per colourway in line-up order, then 1–2 detail photos and a 4-up
+     sneaker/variant board if useful (`magick … +append`).
+   - Product photos are `data/media/products/<slug>/ref-N`; each colourway is its own slug (`pack-hobo-rose`, …).
+5. Also save the prompt with `brief prompt --code … --file …` so the code page keeps it.
+6. **Reply to the owner = the image list + the full prompt in one code block. Nothing else**
+   (memory `feedback-flow-deliver-prompt-plus-images-only`). Tell him to copy the prompt from Notepad.
+
+`format: scenes` still uses the scene-by-scene pack below.
+
+## Scene-by-scene steps (`format: scenes`, from evidence)
 1. `node cli.mjs brief context --code FL-XXXXX` → `data/briefs/<code>/CONTEXT.md` (+ `context.json`).
    It lists the **shot list** (start/end/keyframe per shot), speech detection and the product photos.
    No evidence yet → `node cli.mjs analyze evidence --ids <ad_id>` and re-run.
@@ -31,6 +70,10 @@ Project `C:/Users/DELL/ad-engine/creative-lab/`. Worked example: `data/briefs/FL
 5. **Write the pack** (format below) to `data/briefs/<code>/PROMPT.md` and save:
    `node cli.mjs brief prompt --code FL-XXXXX --file data/briefs/FL-XXXXX/PROMPT.md`. Run every Darija line through
    `node tools/validate-compliance.mjs --lang ar-DZ --sac '[]' --text "<line>"` (one line at a time).
+6. **ALWAYS (owner rule 2026-11-06): deliver with `tools/flow-deliver.mjs`** (folder + Notepad prompt, see DEFAULT above). Manual equivalent: create
+   `C:/Users/DELL/Downloads/<CODE> <product-slug>/` holding the pack's numbered photos (`2-pack-studio.jpg`,
+   `3-sneakers-side.jpg`, … — photo N = `data/media/products/<slug>/ref-(N-1)`, skip unused ones), then open it:
+   `explorer.exe "$(cygpath -w "$dir")"`. Do it unasked at the end of every pack and at the start of every Flow run.
 
 ## Flow capabilities to USE (checked 2026-11-04/05; third-party items flagged)
 - **Models:** Veo 3.1 **Quality** (best image; no Ingredients) · **Fast** (Ingredients, good) · **Lite** (drafts, Extend) ·
@@ -45,6 +88,31 @@ Project `C:/Users/DELL/ad-engine/creative-lab/`. Worked example: `data/briefs/FL
 - Prompt grammar that works: **[Shot & lens] → [Subject with locked product description] → [Action with in-shot
   timing] → [Setting] → [Light] → [Grade/texture] → [Audio] → [Continuity + lock sentence]**. Positive phrasing.
   One camera move per scene. Name the time of day and the light source.
+
+**Seen in the live Flow UI 2026-11-06 (owner's Plus account = `flow.google.com/u/1/`):** video models in the
+dropdown are exactly **Omni 1.1 Flash** (default) · **Veo 3.1 - Lite** · **Veo 3.1 - Fast** · **Veo 3.1 - Quality**;
+image default **Nano Banana 2.1**. The project opens on an **agent chat** whose settings (sliders icon) hold
+"Confirm before generating: Always/Never" (keep **Always** — Never spends credits unprompted), image aspect
+16:9/4:3/1:1/3:4/9:16 × x1–x4, video aspect 16:9/9:16 × x1–x4; prompt chip shows `Video · 720p · 6s`.
+Changelog: **Omni 1.2** rolling out — up to 15 s, extend 10 s at a time with image/character/voice ingredients.
+Plus gives 50 extra Flow credits daily. Don't change the owner's Flow settings without asking.
+
+**End-frame landing (FL-HCGC7):** when the reference shot is "an item gets set down", use Frames with the store
+packshot as the **END** frame — the clip starts with the item in the air (full pack still visible at 0) and lands
+exactly on the real product. Write the settings line as `Attach: **2**. Use it as the END (last) frame only; …` —
+the UI parser reads any "start frame" text on the line as a start frame, and `**2** as the END…` breaks the photo list.
+
+**Batch / multi-shot in ONE generation WORKS (owner test 2026-11-06, FL-HCGC7):** a combined prompt with several
+shots joined by hard cuts generated fine — so "one scene = one generation" below is the fidelity-first default, not a
+hard limit. Batch format that reads cleanly (`data/briefs/FL-HCGC7/COLOURS-BATCH.txt`): global blocks once
+(REFERENCES with image numbers · PRODUCT · COLOURWAYS · STUDIO · HANDS · RULES), then `SHOT n · NAME · abs time`
+with CAMERA / FRAME 0 / ACTION (absolute seconds of the whole film, not 0–8 s per scene) / COLOUR CHECK / AUDIO.
+**All-colourways version:** owner wants the range shown (every in-stock colourway). One design block without colour
+words + one line per colourway (hex + sole/lace exceptions) + ONE combined lock ("each keeps its own shade, a bag and
+its sneakers are always the same colourway, never blend/swap, no fifth colour") + a FIXED left→right line-up order
+alternating light/dark so similar colours never touch (hobo: ROSE · NOIRE · BEIGE · MARRON). Upload folder = one
+pack photo per colour in line-up order + scene details + a 4-up sneaker board; also a `0-FALLBACK-lineup-board.jpg`
+(all packs side by side) for when Flow caps the number of ingredients.
 
 ## Production rules
 - **One scene = one generation.** Generate each reference shot as its own 4–8 s clip (even if the final cut uses 1 s

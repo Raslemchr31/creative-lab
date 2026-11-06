@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // creative-lab :: seed bundle — move the curated library to another machine.
 //
-//   node tools/seed.mjs export [--out dist/creative-lab-seed.tar.gz]
+//   node tools/seed.mjs export [--out dist/creative-lab-seed.tar.gz] [--full]
+//     --full ships EVERY downloaded ad media file (exact mirror of this library); bundles over 1.9 GB are
+//     split into <out>.part01, .part02 … (GitHub release assets max 2 GB). Import accepts the .part01 file.
 //   node tools/seed.mjs import --file creative-lab-seed.tar.gz [--force]
 //
 // The bundle holds: lab.db (absolute paths rewritten to a placeholder), DNA drafts, prompt codes (briefs),
@@ -68,7 +70,55 @@ function copyDir(src, rel, stage, skip = () => false) {
   return bytes;
 }
 
-function doExport() {
+const FULL = flag("full", false) === true;
+const PART = 1_900_000_000;
+
+async function splitFile(file) {
+  const size = fs.statSync(file).size;
+  if (size <= PART) return [file];
+  const parts = [];
+  const fd = fs.openSync(file, "r");
+  const buf = Buffer.alloc(64 * 1024 * 1024);
+  let off = 0;
+  for (let i = 1; off < size; i++) {
+    const p = `${file}.part${String(i).padStart(2, "0")}`;
+    const out = fs.openSync(p, "w");
+    let written = 0;
+    while (written < PART && off < size) {
+      const n = fs.readSync(fd, buf, 0, Math.min(buf.length, PART - written, size - off), off);
+      fs.writeSync(out, buf, 0, n);
+      written += n;
+      off += n;
+    }
+    fs.closeSync(out);
+    parts.push(p);
+  }
+  fs.closeSync(fd);
+  fs.rmSync(file);
+  return parts;
+}
+
+function joinParts(first) {
+  const m = /^(.*).part(d+)$/.exec(first);
+  if (!m) return first;
+  const base = m[1];
+  const dir = path.dirname(path.resolve(first));
+  const parts = fs.readdirSync(dir).filter((n) => n.startsWith(path.basename(base) + ".part")).sort();
+  const joined = path.join(dir, path.basename(base));
+  const out = fs.openSync(joined, "w");
+  for (const p of parts) {
+    const fd = fs.openSync(path.join(dir, p), "r");
+    const buf = Buffer.alloc(64 * 1024 * 1024);
+    let n;
+    while ((n = fs.readSync(fd, buf, 0, buf.length, null)) > 0) fs.writeSync(out, buf, 0, n);
+    fs.closeSync(fd);
+  }
+  fs.closeSync(out);
+  console.error(`seed: joined ${parts.length} parts → ${joined}`);
+  return joined;
+}
+
+async function doExport() {
   const out = path.resolve(LAB_ROOT, flag("out", "dist/creative-lab-seed.tar.gz"));
   const stage = `${LAB_ROOT}/dist/seed-staging`;
   fs.rmSync(stage, { recursive: true, force: true });
@@ -89,7 +139,7 @@ function doExport() {
   const setRemote = db.prepare("UPDATE media SET status='remote' WHERE id=?");
   db.exec("BEGIN");
   for (const m of media) {
-    const keep = (dnaIds.has(m.owner_id) || (curated.has(m.owner_id) && !/video$/.test(m.role))) && m.local_path && fs.existsSync(m.local_path);
+    const keep = (FULL || dnaIds.has(m.owner_id) || (curated.has(m.owner_id) && !/video$/.test(m.role))) && m.local_path && fs.existsSync(m.local_path);
     if (keep) {
       const rel = path.relative(LAB_ROOT, m.local_path);
       bytes += copyFile(m.local_path, rel, stage);
@@ -109,17 +159,21 @@ function doExport() {
   const rewritten = rewritePaths(db, LAB_ROOT, MARK);
   db.exec("VACUUM");
   db.close();
-  fs.writeFileSync(`${stage}/data/SEED.json`, JSON.stringify({ made_at: new Date().toISOString(), from: LAB_ROOT, marker: MARK, media_shipped: shipped, media_remote: remote, bytes, rewritten }, null, 2));
+  fs.writeFileSync(`${stage}/data/SEED.json`, JSON.stringify({ made_at: new Date().toISOString(), from: LAB_ROOT, marker: MARK, full: FULL, media_shipped: shipped, media_remote: remote, bytes, rewritten }, null, 2));
   fs.mkdirSync(path.dirname(out), { recursive: true });
   tar(["-czf", out, "data"], stage);
   fs.rmSync(stage, { recursive: true, force: true });
-  console.log(JSON.stringify({ out, size_mb: Math.round(fs.statSync(out).size / 1e6), media_shipped: shipped, media_remote: remote, rewritten }, null, 2));
+  const size_mb = Math.round(fs.statSync(out).size / 1e6);
+  for (const f of fs.readdirSync(path.dirname(out))) if (f.startsWith(path.basename(out) + ".part")) fs.rmSync(path.join(path.dirname(out), f));
+  const files = await splitFile(out);
+  console.log(JSON.stringify({ out: files, size_mb, full: FULL, media_shipped: shipped, media_remote: remote, rewritten }, null, 2));
 }
 
 function doImport() {
-  const file = flag("file");
+  let file = flag("file");
   if (!file || file === true) die("--file <creative-lab-seed.tar.gz> is required");
   if (!fs.existsSync(file)) die(`no such file: ${file}`);
+  file = joinParts(file);
   if (fs.existsSync(`${DATA}/lab.db`) && !flag("force")) die(`${DATA}/lab.db already exists — pass --force to replace it`);
   fs.mkdirSync(DATA, { recursive: true });
   for (const f of ["lab.db", "lab.db-wal", "lab.db-shm"]) fs.rmSync(`${DATA}/${f}`, { force: true });
@@ -131,7 +185,7 @@ function doImport() {
   console.log(JSON.stringify({ imported: file, into: LAB_ROOT, paths_rewritten: n, media_files: meta.media_shipped, seed_made: meta.made_at }, null, 2));
 }
 
-if (cmd === "export") doExport();
+if (cmd === "export") await doExport();
 else if (cmd === "import") doImport();
 else {
   console.log("usage: node tools/seed.mjs export [--out dist/creative-lab-seed.tar.gz]\n       node tools/seed.mjs import --file <seed.tar.gz> [--force]");
